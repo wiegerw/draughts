@@ -1,0 +1,33 @@
+import os ;
+local BOOST_ROOT = [ os.environ BOOST_ROOT ] ;
+
+use-project boost
+  : $(BOOST_ROOT) ;
+
+project scanprogram
+   : requirements
+       <include>include
+
+       #--- We're only interested in static compilation ---#
+       <link>static
+
+       #--- threading ---#
+       <target-os>linux:<linkflags>-lpthread
+
+       #--- clang settings ---#
+       <toolset>clang:<cxxflags>-std=c++1z
+
+       #--- g++ settings ---#
+       <toolset>gcc:<cxxflags>-std=c++1z
+       <toolset>gcc:<cxxflags>-Wno-unused-local-typedefs
+   ;
+
+
+lib scan : [ glob src/*.cpp ] : ;
+
+exe scan31 : tools/scan.cpp scan : ;
+
+install .
+  :
+    scan31
+  ;
