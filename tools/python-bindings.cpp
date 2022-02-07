@@ -1,6 +1,6 @@
 #include <sstream>
 #include "pos.hpp"
-#include "draughts/print.h"
+#include "draughts/scan.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -8,68 +8,6 @@
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
 namespace py = pybind11;
-
-template <typename T>
-std::string print(const T& t)
-{
-  std::ostringstream out;
-  out << t;
-  return out.str();
-}
-
-inline
-bool is_white_to_move(const Pos & pos)
-{
-  return pos.turn() == White;
-}
-
-inline
-Piece_Side piece_side(const Pos & pos, Square sq) {
-
-  int ps = (bit::bit(pos.empty(), sq) << 2)
-           | (bit::bit(pos.king(),  sq) << 1)
-           | (bit::bit(pos.black(), sq) << 0);
-
-  return Piece_Side(ps); // can be Empty
-}
-
-inline
-char piece_char(const Pos& pos, int sq)
-{
-  switch (piece_side(pos, Square(sq))) {
-    case White_Man :  return 'o';
-    case Black_Man :  return 'x';
-    case White_King : return 'O';
-    case Black_King : return 'X';
-    default :      return '.';
-  }
-}
-
-inline
-std::string print_bitboard(const Bit& pieces, char piece = 'x', Side turn = White)
-{
-  Bit empty(0);
-  switch (piece)
-  {
-    case 'x': return draughts::print_board(Pos(turn, empty, pieces, empty, empty), true, false);
-    case 'O': return draughts::print_board(Pos(turn, pieces, empty, pieces, empty), true, false);
-    case 'X': return draughts::print_board(Pos(turn, empty, pieces, empty, empty), true, false);
-    default: return draughts::print_board(Pos(turn, pieces, empty, empty, empty), true, false);
-  }
-}
-
-inline
-Pos start_position()
-{
-  return Pos(White, Bit(0x7DF3EF8000000000), Bit(0x0000000000FBE7DF), Bit(0), Bit(0));
-}
-
-inline
-Pos empty_position()
-{
-  Bit empty(0);
-  return Pos(White, empty, empty, empty, empty);
-}
 
 PYBIND11_MODULE(draughts1, m)
 {
@@ -128,8 +66,14 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_piece", &Pos::is_piece)
     .def("is_side", &Pos::is_side)
     .def("count", &Pos::count)
-    .def("__str__", [](const Pos& pos) { return draughts::print_board(pos, true, true); })
+    .def("__repr__", [](const Pos& pos) { return draughts::print_position(pos, false, true); })
+    .def("__str__", [](const Pos& pos) { return draughts::print_position(pos, true, true); })
+    .def("__eq__", [](const Pos& pos1, const Pos& pos2) { return pos1 == pos2; })
     ;
+
+  m.def("start_position", &draughts::start_position);
+  m.def("print_position", &draughts::print_position);
+  m.def("parse_position", &draughts::parse_position);
 
 //    .def_property("X",
 //                  [](const dataset& D) { return D.X(); },
