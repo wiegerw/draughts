@@ -4,12 +4,23 @@ cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Python3 COMPONENTS Interpreter Development)
+find_package(PythonLibs 3 REQUIRED)
+find_package(PythonInterp)
 find_package(pybind11 REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 include_directories(include)
+
+# Testing (optional)
+option(ENABLE_TESTS "Enable tests" OFF)
+if (${ENABLE_TESTS})
+    find_package(Boost 1.75 COMPONENTS unit_test_framework REQUIRED)
+    include_directories(${Boost_INCLUDE_DIRS} include)
+    add_subdirectory(tests)
+    enable_testing()
+endif()
 
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(scan ${SRC_FILES})
