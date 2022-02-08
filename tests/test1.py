@@ -21,8 +21,8 @@ class Test(TestCase):
         self.assertEqual(9, len(moves))
 
         for move in moves:
-            print(move)
-            # print_move(move, pos)
+            print(print_move(move, pos))
+
         display_position(pos)
 
 if __name__ == '__main__':

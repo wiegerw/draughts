@@ -49,7 +49,8 @@ enum Piece_Side : int {
 };
 
 enum class Key  : uint64;
-enum class Move : uint64;
+// enum class Move : uint64;
+using Move = uint64;
 
 enum Move_Index : int { Move_Index_None = 0 };
 

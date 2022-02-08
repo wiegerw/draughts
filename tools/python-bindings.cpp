@@ -46,8 +46,8 @@ PYBIND11_MODULE(draughts1, m)
   py::class_<List, std::shared_ptr<List>>(m, "MoveList")
     .def(py::init<>(), py::return_value_policy::copy)
     .def("clear", &List::clear)
-    .def("add", [](List& list, int mv) { list.add(Move(mv)); })
-    .def("add_move", [](List& list, int from, int to) { list.add_move(Square(from), Square(to)); })
+    .def("add", &List::add)
+    .def("add_move", &List::add_move)
     .def("add_capture", [](List& list, int from, int to, Bit caps, const Pos& pos, int king) { list.add_capture(Square(from), Square(to), caps, pos, king); })
     .def("set_size", &List::set_size)
     .def("set_score", &List::set_score)
@@ -114,19 +114,19 @@ PYBIND11_MODULE(draughts1, m)
   // moves
   m.def("make_move", [](int from, int to, Bit captured = Bit(0)) { return move::make(Square(from), Square(to), captured); });
   m.def("parse_move", [](const std::string & s, const Pos & pos) { return move::from_string(s, pos); });
-  m.def("print_move", [](int mv, const Pos & pos) { return move::to_string(Move(mv), pos); });
+  m.def("print_move", move::to_string);
   m.def("move_none", []() { return move::None; });
-  m.def("move_from", [](int mv, const Pos & pos) { return move::from(Move(mv), pos); });
-  m.def("move_to", [](int mv, const Pos & pos) { return move::to(Move(mv), pos); });
-  m.def("move_captured", [](int mv, const Pos & pos) { return move::captured(Move(mv), pos); });
-  m.def("move_index", [](int mv, const Pos & pos) { return move::index(Move(mv), pos); });
-  m.def("move_is_capture", [](int mv, const Pos & pos) { return move::is_capture(Move(mv), pos); });
-  m.def("move_is_promotion", [](int mv, const Pos & pos) { return move::is_promotion(Move(mv), pos); });
-  m.def("move_is_conversion", [](int mv, const Pos & pos) { return move::is_conversion(Move(mv), pos); });
-  m.def("move_is_forcing", [](int mv, const Pos & pos) { return move::is_forcing(Move(mv), pos); });
-  m.def("move_is_legal", [](int mv, const Pos & pos) { return move::is_legal(Move(mv), pos); });
-  m.def("move_to_hub", [](int mv, const Pos & pos) { return move::to_hub(Move(mv), pos); });
-  m.def("move_from_hub", [](const std::string & s, const Pos & pos) { return move::from_hub(s, pos); });
+  m.def("move_from", move::from);
+  m.def("move_to", move::to);
+  m.def("move_captured", move::captured);
+  m.def("move_index", move::index);
+  m.def("move_is_capture", move::is_capture);
+  m.def("move_is_promotion", move::is_promotion);
+  m.def("move_is_conversion", move::is_conversion);
+  m.def("move_is_forcing", move::is_forcing);
+  m.def("move_is_legal", move::is_legal);
+  m.def("move_to_hub", move::to_hub);
+  m.def("move_from_hub", move::from_hub);
 
   // move generation
   m.def("generate_moves", [](const Pos& pos) { List list; gen_moves(list, pos); return list; });
