@@ -1,9 +1,9 @@
-#include <sstream>
+#include "gen.hpp"
+#include "list.hpp"
 #include "move.hpp"
 #include "pos.hpp"
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
@@ -43,9 +43,27 @@ PYBIND11_MODULE(draughts1, m)
     .def(py::init<int>(), py::return_value_policy::copy)
     ;
 
+  py::class_<List, std::shared_ptr<List>>(m, "MoveList")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("clear", &List::clear)
+    .def("add", [](List& list, int mv) { list.add(Move(mv)); })
+    .def("add_move", [](List& list, int from, int to) { list.add_move(Square(from), Square(to)); })
+    .def("add_capture", [](List& list, int from, int to, Bit caps, const Pos& pos, int king) { list.add_capture(Square(from), Square(to), caps, pos, king); })
+    .def("set_size", &List::set_size)
+    .def("set_score", &List::set_score)
+    .def("move_to_front", &List::move_to_front)
+    .def("sort", &List::sort)
+    .def("sort_static", &List::sort_static)
+    .def("move", [](const List& list, int i) { return uint64(list.move(i)); })
+    .def("score", &List::score)
+    .def("__getitem__", [](const List& list, int i) { std::cout << "get " << i << std::endl; if (i >= list.size()) return uint64(0); return uint64(list.move(i)); })
+    .def("__iter__", [](const List& list) { return py::make_iterator(list.begin(), list.end()); },
+         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+    .def("__len__", [](const List& list) { return list.size(); })
+    ;
+
   py::class_<Pos, std::shared_ptr<Pos>>(m, "Pos")
     .def(py::init<>(), py::return_value_policy::copy)
-    .def(py::init<Side, Bit, Bit, Bit, Bit>(), py::return_value_policy::copy)
     .def("succ", &Pos::succ)
     .def("turn", &Pos::turn)
     .def("all", &Pos::all)
@@ -85,14 +103,19 @@ PYBIND11_MODULE(draughts1, m)
     .def("__eq__", [](const Pos& pos1, const Pos& pos2) { return pos1 == pos2; })
     ;
 
+  m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
   m.def("start_position", &draughts::start_position);
   m.def("print_position", &draughts::print_position);
   m.def("parse_position", &draughts::parse_position);
   m.def("display_position", &pos::disp);
+  m.def("can_move", &can_move);
+  m.def("can_capture", &can_capture);
 
   // moves
+  m.def("make_move", [](int from, int to, Bit captured = Bit(0)) { return move::make(Square(from), Square(to), captured); });
+  m.def("parse_move", [](const std::string & s, const Pos & pos) { return move::from_string(s, pos); });
+  m.def("print_move", [](int mv, const Pos & pos) { return move::to_string(Move(mv), pos); });
   m.def("move_none", []() { return move::None; });
-  m.def("move_make", [](int from, int to, Bit captured = Bit(0)) { return move::make(Square(from), Square(to), captured); });
   m.def("move_from", [](int mv, const Pos & pos) { return move::from(Move(mv), pos); });
   m.def("move_to", [](int mv, const Pos & pos) { return move::to(Move(mv), pos); });
   m.def("move_captured", [](int mv, const Pos & pos) { return move::captured(Move(mv), pos); });
@@ -102,10 +125,14 @@ PYBIND11_MODULE(draughts1, m)
   m.def("move_is_conversion", [](int mv, const Pos & pos) { return move::is_conversion(Move(mv), pos); });
   m.def("move_is_forcing", [](int mv, const Pos & pos) { return move::is_forcing(Move(mv), pos); });
   m.def("move_is_legal", [](int mv, const Pos & pos) { return move::is_legal(Move(mv), pos); });
-  m.def("move_to_string", [](int mv, const Pos & pos) { return move::to_string(Move(mv), pos); });
   m.def("move_to_hub", [](int mv, const Pos & pos) { return move::to_hub(Move(mv), pos); });
-  m.def("move_from_string", [](const std::string & s, const Pos & pos) { return move::from_string(s, pos); });
   m.def("move_from_hub", [](const std::string & s, const Pos & pos) { return move::from_hub(s, pos); });
+
+  // move generation
+  m.def("generate_moves", [](const Pos& pos) { List list; gen_moves(list, pos); return list; });
+  m.def("generate_captures", [](const Pos& pos) { List list; gen_captures(list, pos); return list; });
+  m.def("generate_promotions", [](const Pos& pos) { List list; gen_promotions(list, pos); return list; });
+  m.def("add_sacs", [](const Pos& pos) { List list; add_sacs(list, pos); return list; });
 
 //    .def_property("X",
 //                  [](const dataset& D) { return D.X(); },

@@ -17,7 +17,12 @@ class Test(TestCase):
         text = 'xxxxxxxxxxxxxxxxxxxx..........ooooooooooooooooooooW'
         self.assertEqual(text, print_position(pos, False, True))
         self.assertEqual(pos, parse_position(text))
+        moves = generate_moves(pos)
+        self.assertEqual(9, len(moves))
 
+        for move in moves:
+            print(move)
+            # print_move(move, pos)
         display_position(pos)
 
 if __name__ == '__main__':
