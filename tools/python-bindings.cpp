@@ -1,3 +1,4 @@
+#include "eval.hpp"
 #include "gen.hpp"
 #include "list.hpp"
 #include "move.hpp"
@@ -10,8 +11,27 @@
 
 namespace py = pybind11;
 
+struct ScanModule
+{
+  ScanModule()
+  {
+    bit::init();
+//    hash::init();
+    pos::init();
+//    var::init();
+//    bb::index_init();
+//    bb::comp_init();
+//    ml::rand_init(); // after hash keys
+    eval_init();
+  }
+
+  ~ScanModule() = default;
+};
+
 PYBIND11_MODULE(draughts1, m)
 {
+  static ScanModule module;
+
   m.doc() = R"pbdoc(
         Pybind11 example plugin
         -----------------------
@@ -104,12 +124,13 @@ PYBIND11_MODULE(draughts1, m)
     ;
 
   m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
-  m.def("start_position", &draughts::start_position);
-  m.def("print_position", &draughts::print_position);
-  m.def("parse_position", &draughts::parse_position);
-  m.def("display_position", &pos::disp);
-  m.def("can_move", &can_move);
-  m.def("can_capture", &can_capture);
+  m.def("start_position", draughts::start_position);
+  m.def("print_position", draughts::print_position);
+  m.def("parse_position", draughts::parse_position);
+  m.def("display_position", pos::disp);
+  m.def("eval_position", [](const Pos& pos) { return int(eval(pos)); });
+  m.def("can_move", can_move);
+  m.def("can_capture", can_capture);
 
   // moves
   m.def("make_move", [](int from, int to, Bit captured = Bit(0)) { return move::make(Square(from), Square(to), captured); });

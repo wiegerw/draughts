@@ -25,6 +25,23 @@ class Test(TestCase):
 
         display_position(pos)
 
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   x   . 
+         x   x   x   x   .   
+           x   .   x   x   o 
+         x   o   o   .   o   
+           .   o   o   .   o 
+         .   o   o   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   B;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main()
