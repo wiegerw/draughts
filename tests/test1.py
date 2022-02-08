@@ -18,6 +18,7 @@ class Test(TestCase):
         self.assertEqual(text, print_position(pos, False, True))
         self.assertEqual(pos, parse_position(text))
 
+        display_position(pos)
 
 if __name__ == '__main__':
     import unittest
