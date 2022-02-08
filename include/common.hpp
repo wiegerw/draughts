@@ -28,7 +28,8 @@ const std::string Engine_Version {"3.1"};
 
 // types
 
-enum Square : int;
+//enum Square : int;
+using Square = int;
 
 enum Inc : int {
    I1 = 6, J1 = 7,
@@ -54,9 +55,12 @@ using Move = uint64;
 
 enum Move_Index : int { Move_Index_None = 0 };
 
-enum Depth : int;
-enum Ply   : int;
-enum Score : int;
+//enum Depth : int;
+//enum Ply   : int;
+//enum Score : int;
+using Depth = int;
+using Ply = int;
+using Score = int;
 
 class Bit {
 
@@ -89,26 +93,26 @@ inline Inc operator - (Inc inc) { return Inc(-int(inc)); }
 
 inline void operator ^= (Key & k0, Key k1) { k0 = Key(uint64(k0) ^ uint64(k1)); }
 
-inline Depth operator + (Depth d0, Depth d1) { return Depth(int(d0) + int(d1)); }
-inline Depth operator - (Depth d0, Depth d1) { return Depth(int(d0) - int(d1)); }
-
-inline void operator += (Depth & d0, Depth d1) { d0 = d0 + d1; }
-inline void operator -= (Depth & d0, Depth d1) { d0 = d0 - d1; }
-
-inline Ply operator + (Ply p0, Ply p1) { return Ply(int(p0) + int(p1)); }
-inline Ply operator - (Ply p0, Ply p1) { return Ply(int(p0) - int(p1)); }
-
-inline void operator += (Ply & p0, Ply p1) { p0 = p0 + p1; }
-inline void operator -= (Ply & p0, Ply p1) { p0 = p0 - p1; }
-
-inline Score operator + (Score sc) { return Score(+int(sc)); }
-inline Score operator - (Score sc) { return Score(-int(sc)); }
-
-inline Score operator + (Score s0, Score s1) { return Score(int(s0) + int(s1)); }
-inline Score operator - (Score s0, Score s1) { return Score(int(s0) - int(s1)); }
-
-inline void operator += (Score & s0, Score s1) { s0 = s0 + s1; }
-inline void operator -= (Score & s0, Score s1) { s0 = s0 - s1; }
+//inline Depth operator + (Depth d0, Depth d1) { return Depth(int(d0) + int(d1)); }
+//inline Depth operator - (Depth d0, Depth d1) { return Depth(int(d0) - int(d1)); }
+//
+//inline void operator += (Depth & d0, Depth d1) { d0 = d0 + d1; }
+//inline void operator -= (Depth & d0, Depth d1) { d0 = d0 - d1; }
+//
+//inline Ply operator + (Ply p0, Ply p1) { return Ply(int(p0) + int(p1)); }
+//inline Ply operator - (Ply p0, Ply p1) { return Ply(int(p0) - int(p1)); }
+//
+//inline void operator += (Ply & p0, Ply p1) { p0 = p0 + p1; }
+//inline void operator -= (Ply & p0, Ply p1) { p0 = p0 - p1; }
+//
+//inline Score operator + (Score sc) { return Score(+int(sc)); }
+//inline Score operator - (Score sc) { return Score(-int(sc)); }
+//
+//inline Score operator + (Score s0, Score s1) { return Score(int(s0) + int(s1)); }
+//inline Score operator - (Score s0, Score s1) { return Score(int(s0) - int(s1)); }
+//
+//inline void operator += (Score & s0, Score s1) { s0 = s0 + s1; }
+//inline void operator -= (Score & s0, Score s1) { s0 = s0 - s1; }
 
 inline Bit operator | (Bit b0, Bit    b1) { return Bit(uint64(b0) | uint64(b1)); }
 inline Bit operator & (Bit b0, uint64 b1) { return Bit(uint64(b0) & b1); }
