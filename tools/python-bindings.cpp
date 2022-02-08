@@ -3,6 +3,8 @@
 #include "list.hpp"
 #include "move.hpp"
 #include "pos.hpp"
+#include "search.hpp"
+#include "tt.hpp"
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
 
@@ -11,6 +13,7 @@
 
 namespace py = pybind11;
 
+// Takes care of initialization
 struct ScanModule
 {
   ScanModule()
@@ -68,17 +71,16 @@ PYBIND11_MODULE(draughts1, m)
     .def("clear", &List::clear)
     .def("add", &List::add)
     .def("add_move", &List::add_move)
-    .def("add_capture", [](List& list, int from, int to, Bit caps, const Pos& pos, int king) { list.add_capture(Square(from), Square(to), caps, pos, king); })
+    .def("add_capture", &List::add_capture)
     .def("set_size", &List::set_size)
     .def("set_score", &List::set_score)
     .def("move_to_front", &List::move_to_front)
     .def("sort", &List::sort)
     .def("sort_static", &List::sort_static)
-    .def("move", [](const List& list, int i) { return uint64(list.move(i)); })
+    .def("move", [](const List& list, int i) { return list.move(i); })
     .def("score", &List::score)
-    .def("__getitem__", [](const List& list, int i) { std::cout << "get " << i << std::endl; if (i >= list.size()) return uint64(0); return uint64(list.move(i)); })
-    .def("__iter__", [](const List& list) { return py::make_iterator(list.begin(), list.end()); },
-         py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+    .def("__getitem__", [](const List& list, int i) { return list.move(i); })
+    .def("__iter__", [](const List& list) { return py::make_iterator(list.begin(), list.end()); }, py::keep_alive<0, 1>())
     .def("__len__", [](const List& list) { return list.size(); })
     ;
 
@@ -132,9 +134,71 @@ PYBIND11_MODULE(draughts1, m)
   m.def("can_move", can_move);
   m.def("can_capture", can_capture);
 
+  py::class_<Line, std::shared_ptr<Line>>(m, "Line")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("clear", &Line::clear)
+    .def("add", &Line::add)
+    .def("set", &Line::set)
+    .def("concat", &Line::concat)
+    .def("to_string", &Line::to_string)
+    .def("to_hub", &Line::to_hub)
+    .def("__getitem__", [](const Line& line, int i) { return line[i]; })
+    .def("__iter__", [](const Line& line) { return py::make_iterator(line.begin(), line.end()); }, py::keep_alive<0, 1>())
+    .def("__len__", [](const Line& line) { return line.size(); })
+  ;
+
+  py::enum_<Output_Type>(m, "Output_Type", "The output type")
+    .value("None", Output_None, "Output_None")
+    .value("Terminal", Output_Terminal, "Output_Terminal")
+    .value("Hub", Output_Hub, "Output_Hub")
+    ;
+
+  // search
+  py::class_<Search_Input, std::shared_ptr<Search_Input>>(m, "SearchInput")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("init", &Search_Input::init)
+    .def("set_time", &Search_Input::set_time)
+    .def_readwrite("move", &Search_Input::move)
+    .def_readwrite("book", &Search_Input::book)
+    .def_readwrite("depth", &Search_Input::depth)
+    .def_readwrite("nodes", &Search_Input::nodes)
+    .def_readwrite("input", &Search_Input::input)
+    .def_readwrite("output", &Search_Input::output)
+    .def_readwrite("smart", &Search_Input::smart)
+    .def_readwrite("moves", &Search_Input::moves)
+    .def_readwrite("time", &Search_Input::time)
+    .def_readwrite("inc", &Search_Input::inc)
+    .def_readwrite("ponder", &Search_Input::ponder)
+    ;
+
+  py::class_<Search_Output, std::shared_ptr<Search_Output>>(m, "SearchOutput")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("init", &Search_Output::init)
+    .def("end", &Search_Output::end)
+//    .def("start_iter", &Search_Output::start_iter)
+//    .def("end_iter", &Search_Output::end_iter)
+    .def("new_best_move", [](Search_Output& output, Move mv, Score sc = score::None) { output.new_best_move(mv, sc); })
+    .def("new_best_move_full", [](Search_Output& output, Move mv, Score sc, Flag flag, Depth depth, const Line& pv) { output.new_best_move(mv, sc, flag, depth, pv); })
+    .def("ply_avg", &Search_Output::ply_avg)
+    .def("time", &Search_Output::time)
+    .def_readwrite("move", &Search_Output::move)
+    .def_readwrite("answer", &Search_Output::answer)
+    .def_readwrite("score", &Search_Output::score)
+    .def_readwrite("flag", &Search_Output::flag)
+    .def_readwrite("depth", &Search_Output::depth)
+    .def_readwrite("pv", &Search_Output::pv)
+    .def_readwrite("node", &Search_Output::node)
+    .def_readwrite("leaf", &Search_Output::leaf)
+    .def_readwrite("ply_sum", &Search_Output::ply_sum)
+    ;
+
+  m.def("search", search);
+  m.def("quick_move", quick_move);
+  m.def("quick_score", quick_score);
+
   // moves
-  m.def("make_move", [](int from, int to, Bit captured = Bit(0)) { return move::make(Square(from), Square(to), captured); });
-  m.def("parse_move", [](const std::string & s, const Pos & pos) { return move::from_string(s, pos); });
+  m.def("make_move", move::make);
+  m.def("parse_move", move::from_string);
   m.def("print_move", move::to_string);
   m.def("move_none", []() { return move::None; });
   m.def("move_from", move::from);
@@ -155,13 +219,26 @@ PYBIND11_MODULE(draughts1, m)
   m.def("generate_promotions", [](const Pos& pos) { List list; gen_promotions(list, pos); return list; });
   m.def("add_sacs", [](const Pos& pos) { List list; add_sacs(list, pos); return list; });
 
-//    .def_property("X",
-//                  [](const dataset& D) { return D.X(); },
-//                  [](dataset& D, const matrix<double>& X) { D.X() = X; }
-//    )
-//    .def("__str__", [](const dataset& D) { return print(D); })
-//    .def("__eq__", [](const dataset& D1, const dataset& D2) { return D1 == D2; })
-//    .def_readwrite("min_samples_leaf", &decision_tree_options::min_samples_leaf)
+  // transposition table
+  py::enum_<Flag>(m, "Flag", py::arithmetic(), "Transposition table flag")
+    .value("None", Flag::None, "None")
+    .value("Upper", Flag::Upper, "Upper")
+    .value("Lower", Flag::Lower, "Lower")
+    .value("Exact", Flag::Exact, "Exact")
+    ;
+
+  py::class_<TT, std::shared_ptr<TT>>(m, "Transposition table")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("set_size", &TT::set_size)
+    .def("clear", &TT::clear)
+    .def("inc_date", &TT::inc_date)
+    .def("store", &TT::store)
+    .def("probe", &TT::probe)
+    ;
+
+  m.def("is_lower", is_lower);
+  m.def("is_upper", is_upper);
+  m.def("is_exact", is_exact);
 
 #ifdef VERSION_INFO
 m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

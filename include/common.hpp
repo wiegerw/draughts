@@ -49,8 +49,9 @@ enum Piece_Side : int {
    Empty,
 };
 
-enum class Key  : uint64;
-// enum class Move : uint64;
+//enum class Key  : uint64;
+//enum class Move : uint64;
+using Key = uint64;
 using Move = uint64;
 
 enum Move_Index : int { Move_Index_None = 0 };
@@ -91,7 +92,7 @@ public:
 inline Inc operator + (Inc inc) { return Inc(+int(inc)); }
 inline Inc operator - (Inc inc) { return Inc(-int(inc)); }
 
-inline void operator ^= (Key & k0, Key k1) { k0 = Key(uint64(k0) ^ uint64(k1)); }
+//inline void operator ^= (Key & k0, Key k1) { k0 = Key(uint64(k0) ^ uint64(k1)); }
 
 //inline Depth operator + (Depth d0, Depth d1) { return Depth(int(d0) + int(d1)); }
 //inline Depth operator - (Depth d0, Depth d1) { return Depth(int(d0) - int(d1)); }
