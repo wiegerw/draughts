@@ -8,45 +8,11 @@
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
 
-#define STRINGIFY(x) #x
-#define MACRO_STRINGIFY(x) STRINGIFY(x)
-
 namespace py = pybind11;
-
-// Takes care of initialization
-struct ScanModule
-{
-  ScanModule()
-  {
-    bit::init();
-//    hash::init();
-    pos::init();
-//    var::init();
-//    bb::index_init();
-//    bb::comp_init();
-//    ml::rand_init(); // after hash keys
-    eval_init();
-  }
-
-  ~ScanModule() = default;
-};
 
 PYBIND11_MODULE(draughts1, m)
 {
-  static ScanModule module;
-
-  m.doc() = R"pbdoc(
-        Pybind11 example plugin
-        -----------------------
-
-        .. currentmodule:: python_example
-
-        .. autosummary::
-           :toctree: _generate
-
-           add
-           subtract
-  )pbdoc";
+  m.doc() = "Python bindings for Scan";
 
   py::enum_<Piece_Side>(m, "PieceSide", "White or Black")
     .value("White_Man", White_Man, "White_Man")
@@ -240,9 +206,8 @@ PYBIND11_MODULE(draughts1, m)
   m.def("is_upper", is_upper);
   m.def("is_exact", is_exact);
 
-#ifdef VERSION_INFO
-m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
-#else
-m.attr("__version__") = "dev";
-#endif
+  // initialization
+  m.def("bit_init", bit::init);
+  m.def("pos_init", pos::init);
+  m.def("eval_init", eval_init);
 }

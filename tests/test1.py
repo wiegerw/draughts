@@ -2,11 +2,17 @@
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE or http://www.boost.org/LICENSE_1_0.txt)
 
-from unittest import TestCase
+import unittest
 from draughts1 import *
 
 
-class Test(TestCase):
+class Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        bit_init()
+        pos_init()
+        eval_init()
+
     def test_position(self):
         pos = Pos()
         text = '..................................................W'
