@@ -2,12 +2,19 @@
 // Distributed under the Distributed under the GPL-3.0 Software License.
 // (See accompanying file license.txt or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 
+#include "bb_base.hpp"
+#include "bb_comp.hpp"
+#include "bb_index.hpp"
 #include "eval.hpp"
+#include "game.hpp"
 #include "gen.hpp"
+#include "hash.hpp"
 #include "list.hpp"
+#include "main.hpp"
 #include "move.hpp"
 #include "pos.hpp"
 #include "search.hpp"
+#include "thread.hpp"
 #include "tt.hpp"
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
@@ -93,6 +100,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("__repr__", [](const Pos& pos) { return draughts::print_position(pos, false, true); })
     .def("__str__", [](const Pos& pos) { return draughts::print_position(pos, true, true); })
     .def("__eq__", [](const Pos& pos1, const Pos& pos2) { return pos1 == pos2; })
+    .def("__hash__", hash::key)
     ;
 
   m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
@@ -166,7 +174,7 @@ PYBIND11_MODULE(draughts1, m)
   m.def("quick_move", quick_move);
   m.def("quick_score", quick_score);
 
-  // moves
+  // move
   m.def("make_move", move::make);
   m.def("parse_move", move::from_string);
   m.def("print_move", move::to_string);
@@ -189,15 +197,15 @@ PYBIND11_MODULE(draughts1, m)
   m.def("generate_promotions", [](const Pos& pos) { List list; gen_promotions(list, pos); return list; });
   m.def("add_sacs", [](const Pos& pos) { List list; add_sacs(list, pos); return list; });
 
-  // transposition table
-  py::enum_<Flag>(m, "Flag", py::arithmetic(), "Transposition table flag")
+  // tt.h
+  py::enum_<Flag>(m, "TTFlag", py::arithmetic(), "Transposition table flag")
     .value("None", Flag::None, "None")
     .value("Upper", Flag::Upper, "Upper")
     .value("Lower", Flag::Lower, "Lower")
     .value("Exact", Flag::Exact, "Exact")
     ;
 
-  py::class_<TT, std::shared_ptr<TT>>(m, "Transposition table")
+  py::class_<TT, std::shared_ptr<TT>>(m, "TranspositionTable", "Transposition table")
     .def(py::init<>(), py::return_value_policy::copy)
     .def("set_size", &TT::set_size)
     .def("clear", &TT::clear)
@@ -206,12 +214,113 @@ PYBIND11_MODULE(draughts1, m)
     .def("probe", &TT::probe)
     ;
 
-  m.def("is_lower", is_lower);
-  m.def("is_upper", is_upper);
-  m.def("is_exact", is_exact);
+  m.def("tt_is_lower", is_lower);
+  m.def("tt_is_upper", is_upper);
+  m.def("tt_is_exact", is_exact);
 
-  // initialization
+  // game
+  py::class_<Game, std::shared_ptr<Game>>(m, "Game", "A draughts game")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("clear", &Game::clear)
+    .def("init", [](Game& game, const Pos& pos) { game.init(pos); })
+    .def("init_full", [](Game& game, const Pos& pos, int moves, double time, double inc) { game.init(pos, moves, time, inc); })
+    .def("add_move", &Game::add_move)
+    .def("goto", &Game::go_to)
+    .def("turn", &Game::turn)
+    .def("is_end", &Game::is_end)
+    .def("result", &Game::result)
+    .def("size", &Game::size)
+    .def("ply", &Game::ply)
+    .def("move", &Game::move)
+    .def("__getitem__", [](const Game& game, int i) { return game[i]; })
+    .def("__len__", [](const Game& game) { return game.size(); })
+    .def("moves", &Game::moves)
+    .def("time", &Game::time)
+    .def("inc", &Game::inc)
+    .def("start_pos", &Game::start_pos)
+    .def("pos", &Game::pos)
+    .def("turn", &Game::turn)
+    .def("node", &Game::node)
+    ;
+
+  m.def("result_to_string", result_to_string);
+
+  // hash.hpp
+  m.def("hash_key", hash::key);
+  m.def("hash_index", hash::index);
+  m.def("hash_lock", hash::lock);
+
+  // bb_comp.hpp
+  py::class_<bb::Index_, std::shared_ptr<bb::Index_>>(m, "EGDBCompressedIndex", "Endgame database compresssed index")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("load", &bb::Index_::load)
+    .def("__getitem__", [](const bb::Index_& index, int i) { return index[i]; })
+    .def("__len__", [](const bb::Index_& index) { return index.size(); })
+    ;
+
+  // bb_base.hpp
+  py::enum_<bb::Value>(m, "EGDBValue")  // endgame database value
+    .value("Draw", bb::Draw, "Draw")
+    .value("Loss", bb::Loss, "Loss")
+    .value("Win", bb::Win, "Win")
+    .value("Unknown", bb::Unknown, "Unknown")
+    ;
+
+  py::class_<draughts::egdb, std::shared_ptr<draughts::egdb>>(m, "EGDB", "Endgame database")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("init", &draughts::egdb::init)
+    .def("pos_is_load", &draughts::egdb::pos_is_load)
+    .def("pos_is_search", &draughts::egdb::pos_is_search)
+    .def("probe", &draughts::egdb::probe)
+    .def("probe_raw", &draughts::egdb::probe_raw)
+    .def("value_update", &draughts::egdb::value_update)
+    .def("value_age", &draughts::egdb::value_age)
+    .def("value_max", &draughts::egdb::value_max)
+    .def("value_nega", &draughts::egdb::value_nega)
+    .def("value_from_nega", &draughts::egdb::value_from_nega)
+    .def("value_to_string", &draughts::egdb::value_to_string)
+    ;
+
+  // bb_index.hpp
+  py::class_<draughts::egdb_index, std::shared_ptr<draughts::egdb_index>>(m, "EGDBIndex", "Endgame database index")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("init", &draughts::egdb_index::init)
+    .def("id_make", &draughts::egdb_index::id_make)
+    .def("id_is_illegal", &draughts::egdb_index::id_is_illegal)
+    .def("id_is_end", &draughts::egdb_index::id_is_end)
+    .def("id_size", &draughts::egdb_index::id_size)
+    .def("id_wm", &draughts::egdb_index::id_wm)
+    .def("id_bm", &draughts::egdb_index::id_bm)
+    .def("id_wk", &draughts::egdb_index::id_wk)
+    .def("id_bk", &draughts::egdb_index::id_bk)
+    .def("id_name", &draughts::egdb_index::id_name)
+    .def("pos_id", &draughts::egdb_index::pos_id)
+    .def("pos_index", &draughts::egdb_index::pos_index)
+    .def("index_size", &draughts::egdb_index::index_size)
+    ;
+
+  // var.hpp
+  py::class_<draughts::scan_settings, std::shared_ptr<draughts::scan_settings>>(m, "ScanSettings")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("init", &draughts::scan_settings::init)
+    .def("load", &draughts::scan_settings::load)
+    .def("update", &draughts::scan_settings::update)
+    .def("get", &draughts::scan_settings::get)
+    .def("set", &draughts::scan_settings::set)
+    .def("variant_name", &draughts::scan_settings::variant_name)
+    ;
+
+  // thread.hpp
+  m.def("listen_input", listen_input);
+
+  // initialization functions
   m.def("bit_init", bit::init);
   m.def("pos_init", pos::init);
   m.def("eval_init", eval_init);
+  m.def("comp_init", bb::comp_init);
+  m.def("hash_init", hash::init);
+  m.def("rand_init", ml::rand_init);
+
+  // added
+  m.def("run_terminal_game", run_terminal_game);
 }

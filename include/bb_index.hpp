@@ -21,7 +21,8 @@ const int ID_Size {1 << 12};
 
 using Index = uint32; // enough for 6 pieces (7 for BT variant)
 
-enum ID : int;
+// enum ID : int;
+using ID = int;
 
 // functions
 

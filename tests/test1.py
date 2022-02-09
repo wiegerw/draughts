@@ -10,8 +10,14 @@ class Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         bit_init()
+        hash_init()
         pos_init()
         eval_init()
+        ScanSettings.init()  # var::init()
+        EGDBIndex.init()     # bb::index_init()
+        comp_init()
+        rand_init()
+        ScanSettings.load("scan.ini")
 
     def test_position(self):
         pos = Pos()
@@ -44,6 +50,11 @@ class Test(unittest.TestCase):
         pos = parse_position(text)
         display_position(pos)
         print('eval', eval_position(pos))
+
+        print('hash', hash_key(pos), hash(pos))
+        # N.B. The values are different, because the function hash truncates the return value to a size of Py_ssize_t.
+
+        run_terminal_game()
 
 
 if __name__ == '__main__':
