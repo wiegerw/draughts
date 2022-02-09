@@ -1,8 +1,6 @@
-// Copyright: Wieger Wesselink
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+// Copyright: Wieger Wesselink 2022
+// Distributed under the Distributed under the GPL-3.0 Software License.
+// (See accompanying file license.txt or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 /// \file draughts/scan.h
 /// \brief add your file description here.

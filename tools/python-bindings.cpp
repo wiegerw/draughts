@@ -1,3 +1,7 @@
+// Copyright: Wieger Wesselink 2022
+// Distributed under the Distributed under the GPL-3.0 Software License.
+// (See accompanying file license.txt or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+
 #include "eval.hpp"
 #include "gen.hpp"
 #include "list.hpp"

@@ -1,6 +1,6 @@
-# Copyright 2021 Wieger Wesselink.
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE or http://www.boost.org/LICENSE_1_0.txt)
+#  (C) Copyright Wieger Wesselink 2022. Distributed under the GPL-3.0
+#  Software License, (See accompanying file license.txt or copy at
+#  https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import unittest
 from draughts1 import *
@@ -25,11 +25,9 @@ class Test(unittest.TestCase):
         self.assertEqual(pos, parse_position(text))
         moves = generate_moves(pos)
         self.assertEqual(9, len(moves))
-
+        display_position(pos)
         for move in moves:
             print(print_move(move, pos))
-
-        display_position(pos)
 
         text = '''
            .   .   .   .   . 
