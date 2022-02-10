@@ -10,7 +10,7 @@
 #include "gen.hpp"
 #include "hash.hpp"
 #include "list.hpp"
-#include "main.hpp"
+#include "terminal.hpp"
 #include "move.hpp"
 #include "pos.hpp"
 #include "search.hpp"

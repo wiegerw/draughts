@@ -32,7 +32,7 @@
 #include "tt.hpp"
 #include "util.hpp"
 #include "var.hpp"
-#include "main.hpp"
+#include "terminal.hpp"
 
 // variables
 
@@ -73,7 +73,7 @@ int main(int argc, char * argv[]) {
       listen_input();
       bit::init(); // depends on the variant
 
-      hub_loop();
+      hub::hub_loop();
 
    } else {
 

@@ -62,6 +62,12 @@ void add_pair (std::string & line, const std::string & name, int value);
 void add_pair (std::string & line, const std::string & name, double value, int precision);
 void add_pair (std::string & line, const std::string & name, const std::string & value);
 
+void param_bool(const std::string & name);
+void param_int(const std::string & name, int min, int max);
+void param_enum(const std::string & name, const std::string & values);
+
+void hub_loop ();
+
 } // namespace hub
 
 #endif // !defined HUB_HPP
