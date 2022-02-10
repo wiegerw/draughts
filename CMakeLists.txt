@@ -20,6 +20,9 @@ pybind11_add_module(draughts1 ${SRC_FILES} tools/python-bindings.cpp)
 add_executable(scan31 tools/scan.cpp)
 target_link_libraries(scan31 libscan Threads::Threads)
 
+add_executable(search examples/search.cpp)
+target_link_libraries(search libscan Threads::Threads)
+
 # Testing (optional)
 option(ENABLE_TESTS "Enable tests" OFF)
 if (${ENABLE_TESTS})

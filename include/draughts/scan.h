@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include "bb_index.hpp"
 #include "pos.hpp"
 #include "var.hpp"
 

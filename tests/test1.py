@@ -54,7 +54,24 @@ class Test(unittest.TestCase):
         print('hash', hash_key(pos), hash(pos))
         # N.B. The values are different, because the function hash truncates the return value to a size of Py_ssize_t.
 
-        run_terminal_game()
+
+        init_high()  # TODO: improve this interface
+
+        node = make_node(pos)
+
+        si = SearchInput()
+        si.move = True
+        si.book = False
+        si.depth = 10
+        si.nodes = 1000000000000
+        si.time = 5.0
+        si.input = True
+        si.output = OutputType.Terminal
+
+        so = SearchOutput()
+        search(so, node, si)
+
+        # run_terminal_game()
 
 
 if __name__ == '__main__':

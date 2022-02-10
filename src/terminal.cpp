@@ -4,7 +4,6 @@
 #include "eval.hpp"
 #include "fen.hpp"
 #include "game.hpp"
-#include "hub.hpp"
 #include "list.hpp"
 #include "terminal.hpp"
 #include "move.hpp"

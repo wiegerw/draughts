@@ -61,6 +61,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("__len__", [](const List& list) { return list.size(); })
     ;
 
+  // pos.hpp
   py::class_<Pos, std::shared_ptr<Pos>>(m, "Pos")
     .def(py::init<>(), py::return_value_policy::copy)
     .def("succ", &Pos::succ)
@@ -103,6 +104,15 @@ PYBIND11_MODULE(draughts1, m)
     .def("__hash__", hash::key)
     ;
 
+  py::class_<Node, std::shared_ptr<Node>>(m, "Node")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("position", [](const Node& node) { return Pos(node); })
+    .def("succ", &Node::succ)
+    .def("is_end", &Node::is_end)
+    .def("is_draw", &Node::is_draw)
+    ;
+  m.def("make_node", [](const Pos& pos) { return Node(pos); });
+
   m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
   m.def("start_position", draughts::start_position);
   m.def("print_position", draughts::print_position);
@@ -125,10 +135,10 @@ PYBIND11_MODULE(draughts1, m)
     .def("__len__", [](const Line& line) { return line.size(); })
   ;
 
-  py::enum_<Output_Type>(m, "Output_Type", "The output type")
-    .value("None", Output_None, "Output_None")
-    .value("Terminal", Output_Terminal, "Output_Terminal")
-    .value("Hub", Output_Hub, "Output_Hub")
+  py::enum_<Output_Type>(m, "OutputType", "The output type")
+    .value("None", Output_None, "No output")
+    .value("Terminal", Output_Terminal, "Print output to terminal")
+    .value("Hub", Output_Hub, "Print output to hub")
     ;
 
   // search
@@ -218,7 +228,7 @@ PYBIND11_MODULE(draughts1, m)
   m.def("tt_is_upper", is_upper);
   m.def("tt_is_exact", is_exact);
 
-  // game
+  // game.hpp
   py::class_<Game, std::shared_ptr<Game>>(m, "Game", "A draughts game")
     .def(py::init<>(), py::return_value_policy::copy)
     .def("clear", &Game::clear)
@@ -312,6 +322,10 @@ PYBIND11_MODULE(draughts1, m)
 
   // thread.hpp
   m.def("listen_input", listen_input);
+
+  // terminal.hpp
+  m.def("init_low", init_low);
+  m.def("init_high", init_high);
 
   // initialization functions
   m.def("bit_init", bit::init);
