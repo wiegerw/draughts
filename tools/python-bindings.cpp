@@ -83,6 +83,7 @@ PYBIND11_MODULE(draughts1, m)
   // pos.hpp
   py::class_<Pos, std::shared_ptr<Pos>>(m, "Pos")
     .def(py::init<>(), py::return_value_policy::copy)
+
     .def("succ", &Pos::succ)
     .def("turn", &Pos::turn)
     .def("all", &Pos::all)
@@ -103,10 +104,13 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_empty", &Pos::is_empty)
     .def("is_piece", &Pos::is_piece)
     .def("is_side", &Pos::is_side)
+    .def("wolf", &Pos::wolf)
     .def("count", &Pos::count)
+
+    // The following are global functions in Scan
     .def("has_king", [](const Pos& pos) { return pos::has_king(pos); })
     .def("has_king_side", [](const Pos& pos, Side sd) { return pos::has_king(pos, sd); })
-    // .def("piece_side", [](const Pos& pos, int sq) { return pos::piece_side(pos, Square(sq)); })
+    .def("piece_side_square", [](const Pos& pos, int sq) { return pos::piece_side(pos, Square(sq)); })
     .def("tempo", [](const Pos& pos) { return pos::tempo(pos); })
     .def("skew", [](const Pos& pos, Side sd) { return pos::skew(pos, sd); })
     .def("stage", [](const Pos& pos) { return pos::stage(pos); })
@@ -117,11 +121,21 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_wipe", [](const Pos& pos) { return pos::is_wipe(pos); })
     .def("is_capture", [](const Pos& pos) { return pos::is_capture(pos); })
     .def("is_threat", [](const Pos& pos) { return pos::is_threat(pos); })
+    .def("can_move", can_move)
+    .def("can_capture", can_capture)
+
     .def("__repr__", [](const Pos& pos) { return draughts::print_position(pos, false, true); })
     .def("__str__", [](const Pos& pos) { return draughts::print_position(pos, true, true); })
     .def("__eq__", [](const Pos& pos1, const Pos& pos2) { return pos1 == pos2; })
     .def("__hash__", hash::key)
     ;
+
+  m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
+  m.def("start_position", draughts::start_position);
+  m.def("print_position", draughts::print_position);
+  m.def("parse_position", draughts::parse_position);
+  m.def("display_position", pos::disp);
+  m.def("eval_position", [](const Pos& pos) { return int(eval(pos)); });
 
   py::class_<Node, std::shared_ptr<Node>>(m, "Node")
     .def(py::init<>(), py::return_value_policy::copy)
@@ -131,15 +145,6 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_draw", &Node::is_draw)
     ;
   m.def("make_node", [](const Pos& pos) { return Node(pos); });
-
-  m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
-  m.def("start_position", draughts::start_position);
-  m.def("print_position", draughts::print_position);
-  m.def("parse_position", draughts::parse_position);
-  m.def("display_position", pos::disp);
-  m.def("eval_position", [](const Pos& pos) { return int(eval(pos)); });
-  m.def("can_move", can_move);
-  m.def("can_capture", can_capture);
 
   py::class_<Line, std::shared_ptr<Line>>(m, "Line")
     .def(py::init<>(), py::return_value_policy::copy)
