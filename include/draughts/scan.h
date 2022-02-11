@@ -128,12 +128,6 @@ Pos parse_position(const std::string& text)
     }
   }
 
-  // N.B. The constructor of Pos cannot handle an empty board :-(
-  if (wk == Bit(0) && wm == Bit(0) && bk == Bit(0) && bm == Bit(0))
-  {
-    return Pos();
-  }
-
   return Pos(turn, wm, bm, wk, bk);
 }
 
@@ -203,4 +197,4 @@ struct scan_settings
 
 } // namespace draughts
 
-#endif // DRAUGHTS_PRINT_H
+#endif // DRAUGHTS_SCAN_H

@@ -35,9 +35,10 @@ Pos::Pos(Bit man, Bit king, Bit white, Bit black, Bit all, Side turn) {
    assert(bit::is_incl(man & white, bit::WM_Squares));
    assert(bit::is_incl(man & black, bit::BM_Squares));
 
-   Bit side[Side_Size] { white, black }; // for debug
-   assert(side[side_opp(turn)] != 0);
-   if (var::Variant == var::BT) assert((side[turn] & king) == 0);
+// WW: removed these assertions, since they prevent the creation of an empty board.
+//   Bit side[Side_Size] { white, black }; // for debug
+//   assert(side[side_opp(turn)] != 0);
+//   if (var::Variant == var::BT) assert((side[turn] & king) == 0);
 
    m_piece = { man, king };
    m_side = { white, black };

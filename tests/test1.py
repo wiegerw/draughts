@@ -88,6 +88,11 @@ class Test(unittest.TestCase):
         self.assertFalse(pos.has_king_side(Side.Black))
         self.assertTrue(pos.is_threat())
 
+    def test_parse(self):
+        text = '..................................................B'
+        pos = parse_position(text)
+        self.assertEqual(text, print_position(pos, False, True))
+
 
     def test_search(self):
         text = '''
