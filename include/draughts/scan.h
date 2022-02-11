@@ -193,7 +193,7 @@ struct egdb
 // var.hpp
 struct scan_settings
 {
-  static void init() { var::init(); }
+  static void init() { init_high(); }
   static void load(const std::string& file_name) { var::load(file_name); }
   static void update() { var::update(); }
   static std::string get(const std::string& name) { return var::get(name); }

@@ -9,15 +9,15 @@ from draughts1 import *
 class Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        bit_init()
-        hash_init()
-        pos_init()
-        eval_init()
-        ScanSettings.init()  # var::init()
-        EGDBIndex.init()     # bb::index_init()
-        comp_init()
-        rand_init()
-        ScanSettings.load("scan.ini")
+        Scan.set("variant", "normal")
+        Scan.set("book", "true")
+        Scan.set("book-ply", "4")
+        Scan.set("book-margin", "4")
+        Scan.set("ponder", "false")
+        Scan.set("threads", "1")
+        Scan.set("tt-size", "24")
+        Scan.set("bb-size", "5")
+        Scan.init()
 
     def test_position(self):
         pos = Pos()
@@ -55,14 +55,12 @@ class Test(unittest.TestCase):
         # N.B. The values are different, because the function hash truncates the return value to a size of Py_ssize_t.
 
 
-        init_high()  # TODO: improve this interface
-
         node = make_node(pos)
 
         si = SearchInput()
         si.move = True
         si.book = False
-        si.depth = 10
+        si.depth = 15
         si.nodes = 1000000000000
         si.time = 5.0
         si.input = True

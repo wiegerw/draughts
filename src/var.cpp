@@ -198,6 +198,7 @@ std::string variant_name() {
       case Frisian : return "_frisian";
       case Losing :  return "_losing";
    }
+   return ""; // to avoid a warning
 }
 
 } // namespace var

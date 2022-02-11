@@ -21,8 +21,27 @@
 
 namespace py = pybind11;
 
+// Takes care of initialization
+struct ScanModule
+{
+  ScanModule()
+  {
+    bit::init();
+    hash::init();
+    pos::init();
+    var::init();
+    bb::index_init();
+    bb::comp_init();
+    ml::rand_init(); // after hash keys
+  }
+
+  ~ScanModule() = default;
+};
+
 PYBIND11_MODULE(draughts1, m)
 {
+  static ScanModule module;
+
   m.doc() = "Python bindings for Scan";
 
   py::enum_<Piece_Side>(m, "PieceSide", "White or Black")
@@ -310,7 +329,7 @@ PYBIND11_MODULE(draughts1, m)
     ;
 
   // var.hpp
-  py::class_<draughts::scan_settings, std::shared_ptr<draughts::scan_settings>>(m, "ScanSettings")
+  py::class_<draughts::scan_settings, std::shared_ptr<draughts::scan_settings>>(m, "Scan")
     .def(py::init<>(), py::return_value_policy::copy)
     .def("init", &draughts::scan_settings::init)
     .def("load", &draughts::scan_settings::load)
@@ -324,16 +343,8 @@ PYBIND11_MODULE(draughts1, m)
   m.def("listen_input", listen_input);
 
   // terminal.hpp
-  m.def("init_low", init_low);
-  m.def("init_high", init_high);
-
-  // initialization functions
-  m.def("bit_init", bit::init);
-  m.def("pos_init", pos::init);
-  m.def("eval_init", eval_init);
-  m.def("comp_init", bb::comp_init);
-  m.def("hash_init", hash::init);
-  m.def("rand_init", ml::rand_init);
+  m.def("terminal_init_low", init_low);
+  m.def("terminal_init_high", init_high);
 
   // added
   m.def("run_terminal_game", run_terminal_game);
