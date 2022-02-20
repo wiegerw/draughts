@@ -41,16 +41,16 @@ ext_modules = [
          "src/search.cpp",
          "src/socket.cpp",
          "src/sort.cpp",
+         "src/terminal.cpp",        
          "src/thread.cpp",
          "src/tt.cpp",
          "src/util.cpp",
          "src/var.cpp",
          "tools/python-bindings.cpp"
          ],
-        # Example: passing in the version to the compiled code
         define_macros = [('VERSION_INFO', __version__)],
-        extra_compile_args=['-std=c++17'],
-        extra_link_args=['-ltbb'],
+        extra_compile_args=['-std=c++17'] if not sys.platform.startswith("win") else [],
+        extra_link_args = ['ws2_32.lib', 'wldap32.lib', 'crypt32.lib'] if sys.platform.startswith("win") else ['-ltbb'],
         include_dirs=['include'],
     ),
 ]
