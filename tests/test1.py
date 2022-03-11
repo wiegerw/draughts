@@ -129,6 +129,75 @@ class Test(unittest.TestCase):
 
         # run_terminal_game()
 
+    def test_egdb(self):
+        text = '''
+           .   .   .   .   X
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   o   .
+           .   .   .   .   .
+         x   .   .   .   .
+           .   .   .   .   O
+         .   o   .   .   O   W;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        value = EGDB.probe_raw(pos)  # N.B. probe_raw can not be called in capture positions
+        self.assertEqual(EGDBValue.Win, value)
+
+        text = '''
+           .   .   .   .   .
+         .   .   .   .   X
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   o   .
+           .   .   .   .   .
+         x   .   .   .   .
+           .   o   .   .   O
+         .   .   .   .   O   B;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        value = EGDB.probe_raw(pos)
+        self.assertEqual(EGDBValue.Loss, value)
+
+        text = '''
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   X   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   o   .
+           .   .   .   .   .
+         x   .   .   .   .
+           .   o   .   .   O
+         .   .   .   .   O   B;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        value = EGDB.probe_raw(pos)
+        self.assertEqual(EGDBValue.Draw, value)
+
+        text = '''
+           .   .   .   .   .
+         o   .   .   .   .
+           .   .   .   .   .
+         .   .   .   o   .
+           .   .   .   .   .
+         .   .   .   .   X
+           .   .   .   .   x
+         .   .   .   .   .
+           .   .   .   .   o
+         .   .   .   O   .   B;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        value = EGDB.probe(pos)
+        self.assertEqual(EGDBValue.Loss, value)
+
 
 if __name__ == '__main__':
     import unittest
