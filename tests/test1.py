@@ -16,7 +16,8 @@ class Test(unittest.TestCase):
         Scan.set("ponder", "false")
         Scan.set("threads", "1")
         Scan.set("tt-size", "24")
-        Scan.set("bb-size", "4")
+        Scan.set("bb-size", "6")
+        Scan.update()
         Scan.init()
 
     def test_position(self):
@@ -110,7 +111,6 @@ class Test(unittest.TestCase):
         pos = parse_position(text)
         display_position(pos)
         print('eval', eval_position(pos))
-
         print('hash', hash_key(pos), hash(pos))
         # N.B. The values are different, because the function hash truncates the return value to a size of Py_ssize_t.
 
