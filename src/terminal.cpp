@@ -1,16 +1,16 @@
 #include <sstream>
-#include "bb_base.hpp"
-#include "book.hpp"
-#include "eval.hpp"
-#include "fen.hpp"
-#include "game.hpp"
-#include "list.hpp"
-#include "terminal.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "search.hpp"
-#include "thread.hpp"
-#include "var.hpp"
+#include "scan/bb_base.hpp"
+#include "scan/book.hpp"
+#include "scan/eval.hpp"
+#include "scan/fen.hpp"
+#include "scan/game.hpp"
+#include "scan/list.hpp"
+#include "scan/terminal.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/search.hpp"
+#include "scan/thread.hpp"
+#include "scan/var.hpp"
 
 void disp_game(const Game & game) {
 

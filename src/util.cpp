@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "libmy.hpp"
-#include "util.hpp"
+#include "scan/libmy.hpp"
+#include "scan/util.hpp"
 
 // functions
 

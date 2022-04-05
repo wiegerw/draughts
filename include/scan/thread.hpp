@@ -11,7 +11,7 @@
 #include <mutex>
 #include <thread>
 
-#include "libmy.hpp"
+#include "scan/libmy.hpp"
 
 // types
 

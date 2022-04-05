@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "bb_index.hpp"
-#include "common.hpp"
-#include "libmy.hpp"
+#include "scan/bb_index.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
 
 namespace bb {
 

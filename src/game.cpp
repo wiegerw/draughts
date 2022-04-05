@@ -3,12 +3,12 @@
 
 #include <string>
 
-#include "bb_base.hpp"
-#include "common.hpp"
-#include "game.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
-#include "score.hpp"
+#include "scan/bb_base.hpp"
+#include "scan/common.hpp"
+#include "scan/game.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
 
 // functions
 

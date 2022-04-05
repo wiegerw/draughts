@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "libmy.hpp"
+#include "scan/libmy.hpp"
 
 namespace socket_ { // HACK: "socket" creates a conflict on macOS
 

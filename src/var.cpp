@@ -7,9 +7,9 @@
 #include <map>
 #include <string>
 
-#include "common.hpp"
-#include "libmy.hpp"
-#include "var.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/var.hpp"
 
 namespace var {
 

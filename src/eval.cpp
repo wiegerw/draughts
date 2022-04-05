@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "eval.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
-#include "score.hpp"
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/eval.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
+#include "scan/var.hpp"
 
 // compile-time functions
 

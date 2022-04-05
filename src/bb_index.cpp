@@ -4,12 +4,12 @@
 #include <algorithm>
 #include <string>
 
-#include "bb_index.hpp"
-#include "bit.hpp"
-#include "common.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
-#include "var.hpp"
+#include "scan/bb_index.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
+#include "scan/var.hpp"
 
 namespace bb {
 

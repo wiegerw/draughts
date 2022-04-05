@@ -1,12 +1,12 @@
 
 // includes
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "hash.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/hash.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
+#include "scan/var.hpp"
 
 namespace hash {
 

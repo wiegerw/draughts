@@ -10,11 +10,11 @@
 
 #include <algorithm>
 #include <sstream>
-#include "bb_base.hpp"
-#include "bb_index.hpp"
-#include "pos.hpp"
-#include "terminal.hpp"
-#include "var.hpp"
+#include "scan/bb_base.hpp"
+#include "scan/bb_index.hpp"
+#include "scan/pos.hpp"
+#include "scan/terminal.hpp"
+#include "scan/var.hpp"
 
 namespace draughts {
 

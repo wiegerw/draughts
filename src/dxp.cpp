@@ -7,18 +7,18 @@
 #include <iostream>
 #include <string>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "dxp.hpp"
-#include "fen.hpp"
-#include "game.hpp"
-#include "libmy.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "search.hpp"
-#include "socket.hpp"
-#include "util.hpp" // for Bad_Input and Bad_Output
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/dxp.hpp"
+#include "scan/fen.hpp"
+#include "scan/game.hpp"
+#include "scan/libmy.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/search.hpp"
+#include "scan/socket.hpp"
+#include "scan/util.hpp" // for Bad_Input and Bad_Output
+#include "scan/var.hpp"
 
 namespace dxp {
 

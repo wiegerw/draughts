@@ -23,9 +23,9 @@ void closesocket(int socket) { close(socket); }
 
 #endif
 
-#include "libmy.hpp"
-#include "socket.hpp"
-#include "var.hpp"
+#include "scan/libmy.hpp"
+#include "scan/socket.hpp"
+#include "scan/var.hpp"
 
 namespace socket_ { // HACK: "socket" creates a conflict on macOS
 

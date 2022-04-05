@@ -7,16 +7,16 @@
 #include <map>
 #include <string>
 
-#include "bb_base.hpp"
-#include "bb_comp.hpp"
-#include "bb_index.hpp"
-#include "common.hpp"
-#include "gen.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "pos.hpp"
-#include "score.hpp"
-#include "var.hpp"
+#include "scan/bb_base.hpp"
+#include "scan/bb_comp.hpp"
+#include "scan/bb_index.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
+#include "scan/var.hpp"
 
 namespace bb {
 

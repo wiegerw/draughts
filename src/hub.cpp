@@ -6,15 +6,15 @@
 #include <sstream>
 #include <string>
 
-#include "fen.hpp"
-#include "game.hpp"
-#include "hub.hpp"
-#include "libmy.hpp"
-#include "terminal.hpp"
-#include "search.hpp"
-#include "thread.hpp" // for get_line
-#include "util.hpp"
-#include "var.hpp"
+#include "scan/fen.hpp"
+#include "scan/game.hpp"
+#include "scan/hub.hpp"
+#include "scan/libmy.hpp"
+#include "scan/terminal.hpp"
+#include "scan/search.hpp"
+#include "scan/thread.hpp" // for get_line
+#include "scan/util.hpp"
+#include "scan/var.hpp"
 
 namespace hub {
 

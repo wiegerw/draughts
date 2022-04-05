@@ -6,13 +6,13 @@
 
 #include <string>
 
-#include "common.hpp"
-#include "libmy.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "score.hpp"
-#include "tt.hpp" // for Flag
-#include "util.hpp" // for Timer
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
+#include "scan/tt.hpp" // for Flag
+#include "scan/util.hpp" // for Timer
 
 class List;
 class Node;

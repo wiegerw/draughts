@@ -6,15 +6,15 @@
 #include <iostream>
 #include <string>
 
-#include "bb_base.hpp"
-#include "bit.hpp"
-#include "common.hpp"
-#include "gen.hpp"
-#include "libmy.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "score.hpp"
-#include "var.hpp"
+#include "scan/bb_base.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp"
+#include "scan/libmy.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
+#include "scan/var.hpp"
 
 // functions
 

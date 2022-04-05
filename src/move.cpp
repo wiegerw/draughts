@@ -3,14 +3,14 @@
 
 #include <string>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "gen.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "util.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/util.hpp"
 
 namespace move {
 

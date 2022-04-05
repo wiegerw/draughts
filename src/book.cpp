@@ -8,16 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "book.hpp"
-#include "common.hpp"
-#include "gen.hpp"
-#include "hash.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "score.hpp"
-#include "var.hpp"
+#include "scan/book.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp"
+#include "scan/hash.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/score.hpp"
+#include "scan/var.hpp"
 
 namespace book {
 

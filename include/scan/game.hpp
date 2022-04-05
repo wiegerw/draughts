@@ -6,9 +6,9 @@
 
 #include <string>
 
-#include "common.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
 
 // types
 

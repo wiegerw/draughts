@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <cmath>
 
-#include "common.hpp"
-#include "hash.hpp"
-#include "libmy.hpp"
-#include "score.hpp"
-#include "tt.hpp"
+#include "scan/common.hpp"
+#include "scan/hash.hpp"
+#include "scan/libmy.hpp"
+#include "scan/score.hpp"
+#include "scan/tt.hpp"
 
 // constants
 

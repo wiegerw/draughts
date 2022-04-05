@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-#include "libmy.hpp"
+#include "scan/libmy.hpp"
 
 namespace ml {
 

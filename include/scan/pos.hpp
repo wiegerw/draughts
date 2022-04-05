@@ -6,10 +6,10 @@
 
 #include <array>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "gen.hpp" // for can_capture
-#include "libmy.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp" // for can_capture
+#include "scan/libmy.hpp"
 
 // types
 

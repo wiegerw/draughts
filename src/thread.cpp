@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "libmy.hpp"
-#include "thread.hpp"
+#include "scan/libmy.hpp"
+#include "scan/thread.hpp"
 
 // types
 

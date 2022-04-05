@@ -8,10 +8,10 @@
 #include <iostream>
 #include <string>
 
-#include "bb_comp.hpp"
-#include "common.hpp"
-#include "libmy.hpp"
-#include "util.hpp"
+#include "scan/bb_comp.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/util.hpp"
 
 namespace bb {
 

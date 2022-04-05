@@ -6,13 +6,13 @@
 #include <cstdio>
 #include <string>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "move.hpp"
-#include "pos.hpp"
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/move.hpp"
+#include "scan/pos.hpp"
+#include "scan/var.hpp"
 
 // functions
 

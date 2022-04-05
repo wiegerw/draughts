@@ -3,13 +3,13 @@
 
 #include <string>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "fen.hpp"
-#include "libmy.hpp"
-#include "pos.hpp"
-#include "util.hpp"
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/fen.hpp"
+#include "scan/libmy.hpp"
+#include "scan/pos.hpp"
+#include "scan/util.hpp"
+#include "scan/var.hpp"
 
 // prototypes
 

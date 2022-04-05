@@ -1,8 +1,8 @@
 #ifndef TERMINAL_HPP
 #define TERMINAL_HPP
 
-#include "common.hpp"
-#include "game.hpp"
+#include "scan/common.hpp"
+#include "scan/game.hpp"
 
 class Terminal {
 

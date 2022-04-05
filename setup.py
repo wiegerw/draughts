@@ -60,7 +60,7 @@ setup(
     version=__version__,
     author="Wieger Wesselink",
     author_email="j.w.wesselink@tue.nl",
-    description="Draughts library (includes Scan 3.0)",
+    description="Draughts library (includes Scan 3.1)",
     long_description="",
     ext_modules=ext_modules,
     # extras_require={"test": "pytest"},

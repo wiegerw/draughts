@@ -3,10 +3,10 @@
 
 #include <cmath>
 
-#include "common.hpp"
-#include "libmy.hpp"
-#include "score.hpp"
-#include "search.hpp" // for Ply_Max
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/score.hpp"
+#include "scan/search.hpp" // for Ply_Max
 
 namespace score {
 

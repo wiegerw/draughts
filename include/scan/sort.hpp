@@ -4,8 +4,8 @@
 
 // includes
 
-#include "common.hpp"
-#include "libmy.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
 
 class List;
 class Pos;

@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "common.hpp"
-#include "libmy.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
 
 class Pos;
 

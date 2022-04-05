@@ -3,11 +3,11 @@
 
 #include <array>
 
-#include "common.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "move.hpp"
-#include "sort.hpp"
+#include "scan/common.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/move.hpp"
+#include "scan/sort.hpp"
 
 // constants
 

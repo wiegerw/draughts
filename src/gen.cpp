@@ -3,13 +3,13 @@
 
 #include <cmath>
 
-#include "bit.hpp"
-#include "common.hpp"
-#include "gen.hpp"
-#include "libmy.hpp"
-#include "list.hpp"
-#include "pos.hpp"
-#include "var.hpp"
+#include "scan/bit.hpp"
+#include "scan/common.hpp"
+#include "scan/gen.hpp"
+#include "scan/libmy.hpp"
+#include "scan/list.hpp"
+#include "scan/pos.hpp"
+#include "scan/var.hpp"
 
 // prototypes
 
