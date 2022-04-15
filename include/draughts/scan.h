@@ -197,6 +197,84 @@ struct scan_settings
   static std::string variant_name() { return var::variant_name(); }
 };
 
+class ScanPlayer
+{
+  private:
+    Game m_game;
+
+    void new_game(const Pos& pos = pos::Start)
+    {
+      m_game.init(pos);
+      G_TT.clear();
+    }
+
+  public:
+    int loop(const Pos& pos, int max_moves, Depth depth = Depth_Max, double time = 1.0, int64 max_nodes = 1E12, bool verbose = false)
+    {
+      Game& game = m_game;
+      game.clear();
+      new_game(pos);
+
+      for (auto i = 0; i < max_moves; i++)
+      {
+        Search_Input si;
+        si.move = true;
+        si.book = true;
+        si.depth = depth;
+        si.nodes = max_nodes;
+        si.time = time;
+        si.input = true;
+        si.output = verbose ? Output_Terminal : Output_None;
+        si.output = Output_None;
+
+        Search_Output so;
+        search(so, game.node(), si);
+
+        Move mv = so.move;
+        if (mv == move::None) mv = quick_move(game.node());
+        game.add_move(mv);
+        if (verbose)
+        {
+          pos::disp(game.pos());
+        }
+
+        if (so.score > 1000)
+        {
+          return game.pos().turn() == White ? -1 : 1;
+        }
+
+        if (so.score < -1000)
+        {
+          return game.pos().turn() == White ? 1 : -1;
+        }
+
+        if (!can_move(game.pos(), game.pos().turn()))
+        {
+          return game.pos().turn() == White ? -1 : 1;
+        }
+
+        if (bb::pos_is_load(game.pos()))
+        {
+          switch(bb::probe(game.pos()))
+          {
+            case bb::Value::Draw: return 0;
+            case bb::Value::Loss: return game.pos().turn() == White ? -1 : 1;
+            case bb::Value::Win: return game.pos().turn() == White ? 1 : -1;
+          }
+        }
+      }
+
+      return 0;
+    }
+};
+
+inline
+int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int64 max_nodes = 1E12, bool verbose = false)
+{
+  ScanPlayer player;
+  return player.loop(pos, 100, depth, time, max_nodes, verbose);
+}
+
 } // namespace draughts
 
 #endif // DRAUGHTS_SCAN_H
