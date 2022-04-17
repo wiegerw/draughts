@@ -52,6 +52,11 @@ PYBIND11_MODULE(draughts1, m)
     .value("Empty", Empty, "Empty")
     ;
 
+  py::enum_<Piece>(m, "Piece", "Man or King")
+    .value("Man", Man, "Man")
+    .value("King", King, "King")
+    ;
+
   py::enum_<Side>(m, "Side", "White or Black")
     .value("White", White, "White")
     .value("Black", Black, "Black")
@@ -106,6 +111,11 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_side", &Pos::is_side)
     .def("wolf", &Pos::wolf)
     .def("count", &Pos::count)
+    // added functions
+    .def("is_empty_", &Pos::is_empty_)
+    .def("is_king", &Pos::is_king)
+    .def("is_white", &Pos::is_white)
+    .def("is_black", &Pos::is_black)
 
     // The following are global functions in Scan
     .def("has_king", [](const Pos& pos) { return pos::has_king(pos); })

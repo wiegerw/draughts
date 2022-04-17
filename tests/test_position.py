@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
         Scan.set("ponder", "false")
         Scan.set("threads", "1")
         Scan.set("tt-size", "24")
-        Scan.set("bb-size", "6")
+        Scan.set("bb-size", "4")
         Scan.update()
         Scan.init()
 
@@ -64,6 +64,14 @@ class Test(unittest.TestCase):
         self.assertTrue(pos.has_king())
         self.assertTrue(pos.has_king_side(Side.White))
         self.assertFalse(pos.is_threat())
+        self.assertTrue(pos.is_empty_(1))
+        self.assertTrue(pos.is_empty_(2))
+        self.assertFalse(pos.is_empty_(3))
+        self.assertTrue(pos.is_king(3))
+        self.assertFalse(pos.is_king(14))
+        self.assertTrue(pos.is_white(3))
+        self.assertTrue(pos.is_black(12))
+        self.assertFalse(pos.is_king(12))
 
         text = '''
            .   .   O   .   . 
@@ -126,77 +134,6 @@ class Test(unittest.TestCase):
         so = SearchOutput()
         node = make_node(pos)
         search(so, node, si)
-
-        # run_terminal_game()
-
-    def test_egdb(self):
-        text = '''
-           .   .   .   .   X
-         .   .   .   .   .
-           .   .   .   .   .
-         .   .   .   .   .
-           .   .   .   .   .
-         .   .   .   o   .
-           .   .   .   .   .
-         x   .   .   .   .
-           .   .   .   .   O
-         .   o   .   .   O   W;
-        '''
-        pos = parse_position(text)
-        display_position(pos)
-        value = EGDB.probe_raw(pos)  # N.B. probe_raw can not be called in capture positions
-        self.assertEqual(EGDBValue.Win, value)
-
-        text = '''
-           .   .   .   .   .
-         .   .   .   .   X
-           .   .   .   .   .
-         .   .   .   .   .
-           .   .   .   .   .
-         .   .   .   o   .
-           .   .   .   .   .
-         x   .   .   .   .
-           .   o   .   .   O
-         .   .   .   .   O   B;
-        '''
-        pos = parse_position(text)
-        display_position(pos)
-        value = EGDB.probe_raw(pos)
-        self.assertEqual(EGDBValue.Loss, value)
-
-        text = '''
-           .   .   .   .   .
-         .   .   .   .   .
-           .   .   .   X   .
-         .   .   .   .   .
-           .   .   .   .   .
-         .   .   .   o   .
-           .   .   .   .   .
-         x   .   .   .   .
-           .   o   .   .   O
-         .   .   .   .   O   B;
-        '''
-        pos = parse_position(text)
-        display_position(pos)
-        value = EGDB.probe_raw(pos)
-        self.assertEqual(EGDBValue.Draw, value)
-
-        text = '''
-           .   .   .   .   .
-         o   .   .   .   .
-           .   .   .   .   .
-         .   .   .   o   .
-           .   .   .   .   .
-         .   .   .   .   X
-           .   .   .   .   x
-         .   .   .   .   .
-           .   .   .   .   o
-         .   .   .   O   .   B;
-        '''
-        pos = parse_position(text)
-        display_position(pos)
-        value = EGDB.probe(pos)
-        self.assertEqual(EGDBValue.Loss, value)
 
 
 if __name__ == '__main__':

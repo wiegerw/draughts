@@ -13,7 +13,9 @@
 #include "scan/bb_base.hpp"
 #include "scan/bb_index.hpp"
 #include "scan/pos.hpp"
+#include "scan/search.hpp"
 #include "scan/terminal.hpp"
+#include "scan/tt.hpp"
 #include "scan/var.hpp"
 
 namespace draughts {

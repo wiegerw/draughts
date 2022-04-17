@@ -65,6 +65,34 @@ public:
    Square wolf  (Side sd) const { return square_make(m_wolf[sd]); }
    int    count (Side sd) const { return m_count[sd]; }
 
+    bool is_empty_(int f) const
+    {
+      assert(1 <= f && f <= 50);
+      Square sq = square_from_std(f);
+      return is_empty(sq);
+    }
+
+    bool is_king(int f) const
+    {
+      assert(1 <= f && f <= 50);
+      Square sq = square_from_std(f);
+      return bit::has(m_piece[King], sq);
+    }
+
+    bool is_white(int f) const
+    {
+      assert(1 <= f && f <= 50);
+      Square sq = square_from_std(f);
+      return bit::has(m_side[Side::White], sq);
+    }
+
+    bool is_black(int f) const
+    {
+      assert(1 <= f && f <= 50);
+      Square sq = square_from_std(f);
+      return bit::has(m_side[Side::Black], sq);
+    }
+
 private:
 
    Pos (Bit man, Bit king, Bit white, Bit black, Bit all, Side turn);
