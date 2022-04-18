@@ -116,6 +116,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_king", &Pos::is_king)
     .def("is_white", &Pos::is_white)
     .def("is_black", &Pos::is_black)
+    .def("is_white_to_move", &Pos::is_white_to_move)
     .def("put_piece", &Pos::put_piece)
 
     // The following are global functions in Scan

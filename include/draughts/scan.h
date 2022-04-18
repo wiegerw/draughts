@@ -211,7 +211,7 @@ class ScanPlayer
     }
 
   public:
-    int loop(const Pos& pos, int max_moves, Depth depth = Depth_Max, double time = 1.0, int64 max_nodes = 1E12, bool verbose = false)
+    int loop(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
     {
       Game& game = m_game;
       game.clear();
@@ -271,10 +271,10 @@ class ScanPlayer
 };
 
 inline
-int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int64 max_nodes = 1E12, bool verbose = false)
+int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
 {
   ScanPlayer player;
-  return player.loop(pos, 100, depth, time, max_nodes, verbose);
+  return player.loop(pos, depth, time, max_moves, max_nodes, verbose);
 }
 
 } // namespace draughts

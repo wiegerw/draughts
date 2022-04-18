@@ -94,6 +94,11 @@ public:
       return bit::has(m_side[Side::Black], sq);
     }
 
+    bool is_white_to_move() const
+    {
+      return m_turn == Side::White;
+    }
+
     void info() const
     {
       std::cout << std::bitset<64>(m_side[Side::White]) << " "
@@ -112,6 +117,16 @@ public:
       bit::set(m_piece[is_king ? Piece::King : Piece::Man], sq);
       bit::clear(m_piece[is_king ? Piece::Man : Piece::King], sq);
       m_all = m_piece[Piece::Man] ^ m_piece[Piece::King];
+    }
+
+    const std::array<Bit, Piece_Size>& piece_array() const
+    {
+      return m_piece;
+    }
+
+    const std::array<Bit, Side_Size>& side_array() const
+    {
+      return m_side;
     }
 
   private:

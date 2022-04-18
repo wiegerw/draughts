@@ -17,6 +17,12 @@ def main():
     Scan.update()
     Scan.init()
 
+    depth = 5
+    time = 1.0
+    max_moves = 100
+    max_nodes = 1000000000
+    verbose = False
+
     text = '''
        .   .   .   .   . 
      .   .   .   .   .   
@@ -31,7 +37,7 @@ def main():
     '''
     for i in range(1):
         pos = parse_position(text)
-        result = playout_minimax(pos, 5, 0.1, True, 1000000000000)
+        result = playout_minimax(pos, depth, time, max_moves, max_nodes, verbose)
         print(f'result = {result}')
 
 
