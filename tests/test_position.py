@@ -97,6 +97,41 @@ class Test(unittest.TestCase):
         self.assertFalse(pos.has_king_side(Side.Black))
         self.assertTrue(pos.is_threat())
 
+    def test_set_position(self):
+        text1 = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   x   . 
+         x   x   x   x   .   
+           x   .   x   x   o 
+         x   o   o   .   o   
+           .   o   o   .   o 
+         .   o   o   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   B;
+        '''
+        pos1 = parse_position(text1)
+        pos1.put_piece(3, False, True)
+        pos1.put_piece(9, False, False)
+        pos1.put_piece(43, True, False)
+        pos1.put_piece(48, True, True)
+
+        text2 = '''
+           .   .   X   .   . 
+         .   .   .   x   .   
+           .   .   x   x   . 
+         x   x   x   x   .   
+           x   .   x   x   o 
+         x   o   o   .   o   
+           .   o   o   .   o 
+         .   o   o   o   .   
+           .   .   o   .   . 
+         .   .   O   .   .   B;
+        '''
+        pos2 = parse_position(text2)
+
+        self.assertEqual(pos1, pos2)
+
     def test_parse(self):
         text = '..................................................B'
         pos = parse_position(text)

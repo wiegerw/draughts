@@ -5,6 +5,7 @@
 // includes
 
 #include <array>
+#include <bitset>
 
 #include "scan/bit.hpp"
 #include "scan/common.hpp"
@@ -93,7 +94,27 @@ public:
       return bit::has(m_side[Side::Black], sq);
     }
 
-private:
+    void info() const
+    {
+      std::cout << std::bitset<64>(m_side[Side::White]) << " "
+                << std::bitset<64>(m_side[Side::Black]) << " "
+                << std::bitset<64>(m_piece[Piece::Man]) << " "
+                << std::bitset<64>(m_piece[Piece::King])
+                << std::endl;
+    }
+
+    void put_piece(int f, bool is_white, bool is_king)
+    {
+      assert(1 <= f && f <= 50);
+      Square sq = square_from_std(f);
+      bit::set(m_side[is_white ? Side::White : Side::Black], sq);
+      bit::clear(m_side[is_white ? Side::Black : Side::White], sq);
+      bit::set(m_piece[is_king ? Piece::King : Piece::Man], sq);
+      bit::clear(m_piece[is_king ? Piece::Man : Piece::King], sq);
+      m_all = m_piece[Piece::Man] ^ m_piece[Piece::King];
+    }
+
+  private:
 
    Pos (Bit man, Bit king, Bit white, Bit black, Bit all, Side turn);
 };
