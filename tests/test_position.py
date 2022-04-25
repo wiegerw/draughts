@@ -200,6 +200,59 @@ class Test(unittest.TestCase):
         pos = play_forced_moves(pos1)
         self.assertEqual(expected, pos)
 
+    def naive_rollout(self, text, expected_piece_count, expected_rollout):
+        pos = parse_position(text)
+        self.assertEqual(expected_piece_count, piece_count_eval(play_forced_moves(pos)))
+        self.assertEqual(expected_rollout, naive_rollout(pos))
+
+    def test_naive_rollout(self):
+        text = '''
+           .   .   .   .   .
+         .   .   .   x   x
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   o   o   o   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   o   W;
+        '''
+        expected_piece_count = 2
+        expected_rollout = 1
+        self.naive_rollout(text, expected_piece_count, expected_rollout)
+
+        text = '''
+           .   X   X   X   .
+         .   .   .   x   x
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   o   o   o   .
+         .   .   O   O   .
+           .   .   .   .   .
+         .   .   .   .   o   W;
+        '''
+        expected_piece_count = -1
+        expected_rollout = 0
+        self.naive_rollout(text, expected_piece_count, expected_rollout)
+
+        text = '''
+           .   .   .   .   .
+         x   .   .   .   .
+           .   .   x   x   .
+         x   .   .   .   .
+           x   .   .   x   .
+         .   .   .   .   .
+           x   .   .   .   .
+         o   .   o   o   o
+           .   .   .   .   o
+         .   .   .   .   .   W;
+        '''
+        expected_piece_count = 0
+        expected_rollout = 0.5
+        self.naive_rollout(text, expected_piece_count, expected_rollout)
 
 if __name__ == '__main__':
     import unittest

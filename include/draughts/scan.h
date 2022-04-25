@@ -12,6 +12,9 @@
 #include <sstream>
 #include "scan/bb_base.hpp"
 #include "scan/bb_index.hpp"
+#include "scan/bit.hpp"
+#include "scan/gen.hpp"
+#include "scan/list.hpp"
 #include "scan/pos.hpp"
 #include "scan/search.hpp"
 #include "scan/terminal.hpp"
@@ -289,6 +292,41 @@ Pos play_forced_moves(const Pos& bs)
     gen_moves(moves, pos);
   }
   return pos;
+}
+
+// The return value ranges between 0 (black wins) and 1 (white wins).
+inline
+double normalize_eval(double x)
+{
+  if (x > 0)
+  {
+    return 1;
+  }
+  else if (x < 0)
+  {
+    return 0;
+  }
+  else
+  {
+    return 0.5;
+  }
+}
+
+// Returns the white piece count minus the black piece count, where a king counts for 3 pieces.
+inline
+int piece_count_eval(const Pos& pos)
+{
+  int wm = bit::count(pos.wm());
+  int bm = bit::count(pos.bm());
+  int wk = bit::count(pos.wk());
+  int bk = bit::count(pos.bk());
+  return wm + 3*wk - bm - 3*bk;
+}
+
+inline
+double naive_rollout(const Pos& bs)
+{
+  return normalize_eval(piece_count_eval(play_forced_moves(bs)));
 }
 
 } // namespace draughts
