@@ -277,6 +277,20 @@ int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, 
   return player.loop(pos, depth, time, max_moves, max_nodes, verbose);
 }
 
+inline
+Pos play_forced_moves(const Pos& bs)
+{
+  Pos pos = bs;
+  List moves;
+  gen_moves(moves, pos);
+  while (moves.size() == 1)
+  {
+    pos = pos.succ(moves.move(0));
+    gen_moves(moves, pos);
+  }
+  return pos;
+}
+
 } // namespace draughts
 
 #endif // DRAUGHTS_SCAN_H

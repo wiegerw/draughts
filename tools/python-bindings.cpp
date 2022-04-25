@@ -366,4 +366,5 @@ PYBIND11_MODULE(draughts1, m)
   // added
   m.def("run_terminal_game", run_terminal_game);
   m.def("playout_minimax", draughts::playout_minimax);
+  m.def("play_forced_moves", draughts::play_forced_moves);
 }

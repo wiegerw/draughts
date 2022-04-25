@@ -170,6 +170,36 @@ class Test(unittest.TestCase):
         node = make_node(pos)
         search(so, node, si)
 
+    def test_play_forced_moves(self):
+        text1 = '''
+           x   .   .   .   .
+         .   .   .   .   .
+           .   x   x   x   .
+         x   .   .   .   .
+           x   .   .   x   .
+         .   .   .   .   .
+           x   .   .   .   .
+         o   .   o   o   o
+           .   .   .   .   o
+         .   .   .   .   .   W;
+        '''
+        pos1 = parse_position(text1)
+        text2 = '''
+           .   .   .   .   .
+         .   .   .   .   .
+           .   x   .   .   .
+         x   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   o
+           .   .   .   .   .
+         .   .   .   .   .   B;
+        '''
+        expected = parse_position(text2)
+        pos = play_forced_moves(pos1)
+        self.assertEqual(expected, pos)
+
 
 if __name__ == '__main__':
     import unittest
