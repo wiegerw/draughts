@@ -74,6 +74,11 @@ class Test(unittest.TestCase):
         self.assertTrue(pos.is_white(3))
         self.assertTrue(pos.is_black(12))
         self.assertFalse(pos.is_king(12))
+        self.assertTrue(pos.is_white_to_move())
+        self.assertEqual(0, pos.white_man_count())
+        self.assertEqual(1, pos.white_king_count())
+        self.assertEqual(9, pos.black_man_count())
+        self.assertEqual(0, pos.black_king_count())
 
         text = '''
            .   .   O   .   . 

@@ -118,6 +118,10 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_black", &Pos::is_black)
     .def("is_white_to_move", &Pos::is_white_to_move)
     .def("put_piece", &Pos::put_piece)
+    .def("white_man_count", [](const Pos& pos) { return bit::count(pos.wm()); })
+    .def("black_man_count", [](const Pos& pos) { return bit::count(pos.bm()); })
+    .def("white_king_count", [](const Pos& pos) { return bit::count(pos.wk()); })
+    .def("black_king_count", [](const Pos& pos) { return bit::count(pos.bk()); })
 
     // The following are global functions in Scan
     .def("has_king", [](const Pos& pos) { return pos::has_king(pos); })
