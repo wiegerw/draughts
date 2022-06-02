@@ -16,8 +16,10 @@
 #include "scan/search.hpp"
 #include "scan/thread.hpp"
 #include "scan/tt.hpp"
+#include "draughts/pdn.h"
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -373,4 +375,13 @@ PYBIND11_MODULE(draughts1, m)
   m.def("play_forced_moves", draughts::play_forced_moves);
   m.def("piece_count_eval", draughts::piece_count_eval);
   m.def("naive_rollout", draughts::naive_rollout);
+
+  // pdn
+  py::class_<draughts::pdn_game, std::shared_ptr<draughts::pdn_game>>(m, "PDNGame")
+    .def(py::init<>(), py::return_value_policy::copy)
+    .def("moves", &draughts::pdn_game::moves)
+    ;
+
+  m.def("parse_pdn_game", draughts::parse_pdn_game);
+  m.def("parse_pdn_file", draughts::parse_pdn_file);
 }
