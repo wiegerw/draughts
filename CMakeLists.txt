@@ -23,9 +23,6 @@ target_link_libraries(scan31 libscan Threads::Threads)
 add_executable(search examples/search.cpp)
 target_link_libraries(search libscan Threads::Threads)
 
-add_executable(egdb examples/egdb.cpp)
-target_link_libraries(egdb libscan Threads::Threads)
-
 # Testing (optional)
 option(ENABLE_TESTS "Enable tests" OFF)
 if (${ENABLE_TESTS})

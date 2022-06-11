@@ -50,8 +50,13 @@ class Test(unittest.TestCase):
  46.42-38 11-16 47.38-32 13-19 48.49-43 15-20 49.43-38 17-21 50.39-34 20-25
  51.38-33'''
         game = parse_pdn_game(text)
-        moves = print_moves(game.moves())
+        moves = print_moves(game.moves)
         self.assertEqual('33-28 18-22 38-33 12-18 31-26 7-12 37-31 19-23 28x19 14x23 32-27 23-28 34-30 20-24 30x19 13x24 40-34 1-7 34-30 9-13 30x19 13x24 45-40 4-9 40-34 9-13 44-40 3-9 34-30 15-20 30x19 13x24 42-38 10-15 40-34 5-10 47-42 9-14 38-32 28x37 41x32 24-29 33x24 20x40 35x44 14-19 46-41 10-14 41-37 8-13 42-38 2-8 44-40 22-28 32x23 18x29 27-22 17x28 26-21 16x27 31x24 19x30 40-34 30-35 39-33 12-18 37-32 7-12 33-28 11-17 36-31 13-19 38-33 14-20 43-38 19-24 31-27 24-29 34x23 18x29 33x24 20x29 38-33 29x38 32x43 12-18 43-39 8-13 48-42 6-11 42-38 11-16 38-32 13-19 49-43 15-20 43-38 17-21 39-34 20-25 38-33', ' '.join(moves))
+        self.assertEqual(game.event, "NLD-chT Ereklasse")
+        self.assertEqual(game.date, "2005.01.15")
+        self.assertEqual(game.white, "Harm Wiersma")
+        self.assertEqual(game.black, "Martijn Vissers")
+        self.assertEqual(game.result, "1-1")
 
     def test_file(self):
         games = parse_pdn_file('../games/wiersma.pdn')

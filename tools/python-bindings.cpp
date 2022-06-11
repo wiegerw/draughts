@@ -379,7 +379,12 @@ PYBIND11_MODULE(draughts1, m)
   // pdn
   py::class_<draughts::pdn_game, std::shared_ptr<draughts::pdn_game>>(m, "PDNGame")
     .def(py::init<>(), py::return_value_policy::copy)
-    .def("moves", &draughts::pdn_game::moves)
+    .def_readwrite("event", &draughts::pdn_game::event)
+    .def_readwrite("date", &draughts::pdn_game::date)
+    .def_readwrite("white", &draughts::pdn_game::white)
+    .def_readwrite("black", &draughts::pdn_game::black)
+    .def_readwrite("result", &draughts::pdn_game::result)
+    .def_readwrite("moves", &draughts::pdn_game::moves)
     ;
 
   m.def("parse_pdn_game", draughts::parse_pdn_game);
