@@ -144,7 +144,6 @@ class Test(unittest.TestCase):
         pos = parse_position(text)
         self.assertEqual(text, print_position(pos, False, True))
 
-
     def test_search(self):
         text = '''
            .   .   .   .   . 
@@ -260,6 +259,27 @@ class Test(unittest.TestCase):
         expected_piece_count = 0
         expected_rollout = 0.5
         self.naive_rollout(text, expected_piece_count, expected_rollout)
+
+    def test_pickle(self):
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   x   . 
+         x   x   x   x   .   
+           x   .   x   x   o 
+         x   o   o   .   o   
+           .   o   o   .   o 
+         .   o   o   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   B;
+        '''
+        pos = parse_position(text)
+        import pickle
+        data = pickle.dumps(pos, 5)
+        pos1 = pickle.loads(data)
+        print(pos1)
+        self.assertEqual(pos, pos1)
+
 
 if __name__ == '__main__':
     import unittest

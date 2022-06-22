@@ -146,6 +146,24 @@ PYBIND11_MODULE(draughts1, m)
     .def("__str__", [](const Pos& pos) { return draughts::print_position(pos, true, true); })
     .def("__eq__", [](const Pos& pos1, const Pos& pos2) { return pos1 == pos2; })
     .def("__hash__", hash::key)
+    .def(py::pickle(
+      [](const Pos &pos)
+      {
+        return py::make_tuple(pos.turn(), uint64(pos.wm()), uint64(pos.bm()), uint64(pos.wk()), uint64(pos.bk()));
+      },
+      [](const py::tuple& t)
+      {
+        if (t.size() != 5)
+        {
+          throw std::runtime_error("Invalid state!");
+        }
+        Side side = t[0].cast<int>() == 0 ? Side::White : Side::Black;
+        Bit wm(t[1].cast<uint64>());
+        Bit bm(t[2].cast<uint64>());
+        Bit wk(t[3].cast<uint64>());
+        Bit bk(t[4].cast<uint64>());
+        return Pos(side, wm, bm, wk, bk);
+      }))
     ;
 
   m.def("make_position", [](Side turn, Bit wm, Bit bm, Bit wk, Bit bk) { return Pos(turn, wm, bm, wk, bk); });
