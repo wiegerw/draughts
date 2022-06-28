@@ -229,7 +229,7 @@ class pdn_parser
       m_out << m_fields.front() << sep << m_fields.back();
       if (m_fields.size() > 2) // ambiguous move
       {
-        for (auto i = 0; i < m_fields.size() - 1; i++)
+        for (unsigned int i = 0; i < m_fields.size() - 1; i++)
         {
           auto f = find_between_field(m_fields[i], m_fields[i + 1], pos);
           m_out << sep << f;

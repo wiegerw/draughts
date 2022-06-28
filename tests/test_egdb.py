@@ -92,6 +92,48 @@ class Test(unittest.TestCase):
         self.assertEqual(EGDBValue.Loss, value)
 
 
+    def test_egdb_enumerator(self):
+        enumerator = EGDBEnumerator(1, 1, 1, 0)
+        count = 0
+        while enumerator.next():
+            count += 1
+        self.assertEqual(73876, count)
+
+        positions = []
+        enumerator = EGDBEnumerator(1, 1, 0, 0)
+        while enumerator.next():
+            positions.append(enumerator.position())
+
+        pos1 = parse_position('''
+               x   .   .   .   .
+             o   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .   W;
+            ''')
+
+        pos2 = parse_position('''
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   .
+             .   .   .   .   .
+               .   .   .   .   x
+             .   .   .   .   o   W;
+            ''')
+
+        self.assertEqual(pos1, positions[0])
+        self.assertEqual(pos2, positions[-1])
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main()

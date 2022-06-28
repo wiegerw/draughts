@@ -16,6 +16,7 @@
 #include "scan/search.hpp"
 #include "scan/thread.hpp"
 #include "scan/tt.hpp"
+#include "draughts/egdb.h"
 #include "draughts/pdn.h"
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
@@ -349,6 +350,12 @@ PYBIND11_MODULE(draughts1, m)
     .def("value_nega", &draughts::egdb::value_nega)
     .def("value_from_nega", &draughts::egdb::value_from_nega)
     .def("value_to_string", &draughts::egdb::value_to_string)
+    ;
+
+  py::class_<draughts::egdb_enumerator, std::shared_ptr<draughts::egdb_enumerator>>(m, "EGDBEnumerator", "Endgame database enumerator")
+    .def(py::init<int, int, int, int>(), py::return_value_policy::copy)
+    .def("next", &draughts::egdb_enumerator::next)
+    .def("position", &draughts::egdb_enumerator::position)
     ;
 
   // bb_index.hpp
