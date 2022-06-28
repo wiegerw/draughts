@@ -11,6 +11,7 @@
 #include "scan/common.hpp"
 #include "scan/gen.hpp" // for can_capture
 #include "scan/libmy.hpp"
+#include "draughts/utilities.h"
 
 // types
 
@@ -117,6 +118,22 @@ public:
       bit::set(m_piece[is_king ? Piece::King : Piece::Man], sq);
       bit::clear(m_piece[is_king ? Piece::Man : Piece::King], sq);
       m_all = m_piece[Piece::Man] ^ m_piece[Piece::King];
+    }
+
+    void flip()
+    {
+      auto flip_bit = [](Bit& x) { x = Bit(draughts::reverse(x) >> 1); };
+      flip_bit(m_piece[Piece::Man]);
+      flip_bit(m_piece[Piece::King]);
+      flip_bit(m_side[Side::White]);
+      flip_bit(m_side[Side::Black]);
+      std::swap(m_side[Side::White], m_side[Side::Black]);
+      flip_bit(m_all);
+      m_turn = (m_turn == Side::White ? Side::Black : Side::White);
+      for (int sd = 0; sd < Side_Size; sd++) {
+        m_wolf[sd] = -1;
+        m_count[sd] = 0;
+      }
     }
 
     const std::array<Bit, Piece_Size>& piece_array() const

@@ -281,6 +281,37 @@ class Test(unittest.TestCase):
         self.assertEqual(pos, pos1)
 
 
+    def test_flip(self):
+        text1 = '''
+           x   X   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         o   O   .   .   .   W;
+        '''
+        pos1 = parse_position(text1)
+        text2 = '''
+           .   .   .   X   x
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   .   .
+           .   .   .   .   .
+         .   .   .   O   o   B;
+        '''
+        expected = parse_position(text2)
+        pos1.flip()
+        self.assertEqual(expected, pos1)
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main()
