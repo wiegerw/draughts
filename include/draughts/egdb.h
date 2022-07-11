@@ -8,6 +8,7 @@
 #ifndef DRAUGHTS_EGDB_H
 #define DRAUGHTS_EGDB_H
 
+#include "draughts/scan.h"
 #include "scan/pos.hpp"
 #include <iterator>
 #include <numeric>
@@ -64,8 +65,24 @@ class egdb_enumerator
       m_squares.push_back(squares);
     }
 
+    bool is_monotone() const
+    {
+      for (std::size_t i = 0; i < m_pieces.size() - 1; i++)
+      {
+        if (m_pieces[i] == m_pieces[i + 1] && m_position[i] >= m_position[i + 1])
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+
     bool make_position()
     {
+      if (!is_monotone())
+      {
+        return false;
+      }
       m_pos = Pos(); // clear the position
       for (unsigned int i = 0; i < m_pieces.size(); i++)
       {

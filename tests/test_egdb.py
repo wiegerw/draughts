@@ -99,6 +99,12 @@ class Test(unittest.TestCase):
             count += 1
         self.assertEqual(73876, count)
 
+        enumerator = EGDBEnumerator(1, 2, 0, 0)
+        count = 0
+        while enumerator.next():
+            count += 1
+        self.assertEqual(37863, count)
+
         positions = []
         enumerator = EGDBEnumerator(1, 1, 0, 0)
         while enumerator.next():
