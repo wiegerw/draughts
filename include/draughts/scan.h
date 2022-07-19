@@ -9,6 +9,8 @@
 #define DRAUGHTS_SCAN_H
 
 #include <algorithm>
+#include <cassert>
+#include <random>
 #include <sstream>
 #include "scan/bb_base.hpp"
 #include "scan/bb_index.hpp"
@@ -202,6 +204,21 @@ struct scan_settings
   static std::string variant_name() { return var::variant_name(); }
 };
 
+// Looks up the result of a position in the endgame database.
+// Returns 1 if white wins, 0 for draw and -1 if black wins.
+inline
+int egdb_lookup(const Pos& pos)
+{
+  assert(bb::pos_is_load(pos));
+  switch(bb::probe(pos))
+  {
+    case bb::Value::Draw: return 0;
+    case bb::Value::Loss: return pos.turn() == White ? -1 : 1;
+    case bb::Value::Win: return pos.turn() == White ? 1 : -1;
+  }
+  throw std::runtime_error("egdb_lookup: unknown result");
+}
+
 class ScanPlayer
 {
   private:
@@ -214,22 +231,28 @@ class ScanPlayer
     }
 
   public:
-    int loop(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
+    int play(const Pos& pos, Depth max_depth = Depth_Max, double max_time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
     {
       Game& game = m_game;
       game.clear();
       new_game(pos);
 
+      Search_Input si;
+      si.move = true;
+      si.book = false;
+      si.depth = max_depth;
+      si.nodes = max_nodes;
+      si.time = max_time;
+      si.input = true;
+
+      if (verbose)
+      {
+        pos::disp(pos);
+      }
+
       for (auto i = 0; i < max_moves; i++)
       {
-        Search_Input si;
-        si.move = true;
-        si.book = true;
-        si.depth = depth;
-        si.nodes = max_nodes;
-        si.time = time;
-        si.input = true;
-        si.output = verbose ? Output_Terminal : Output_None;
+        // si.output = verbose ? Output_Terminal : Output_None;
         si.output = Output_None;
 
         Search_Output so;
@@ -237,21 +260,13 @@ class ScanPlayer
 
         Move mv = so.move;
         if (mv == move::None) mv = quick_move(game.node());
-        game.add_move(mv);
+
         if (verbose)
         {
-          pos::disp(game.pos());
+          std::cout << move::to_string(mv, game.pos()) << "\n";
         }
 
-        if (so.score > 1000)
-        {
-          return game.pos().turn() == White ? -1 : 1;
-        }
-
-        if (so.score < -1000)
-        {
-          return game.pos().turn() == White ? 1 : -1;
-        }
+        game.add_move(mv);
 
         if (!can_move(game.pos(), game.pos().turn()))
         {
@@ -260,12 +275,7 @@ class ScanPlayer
 
         if (bb::pos_is_load(game.pos()))
         {
-          switch(bb::probe(game.pos()))
-          {
-            case bb::Value::Draw: return 0;
-            case bb::Value::Loss: return game.pos().turn() == White ? -1 : 1;
-            case bb::Value::Win: return game.pos().turn() == White ? 1 : -1;
-          }
+          return egdb_lookup(game.pos());
         }
       }
 
@@ -273,11 +283,72 @@ class ScanPlayer
     }
 };
 
+// Plays at most max_moves random moves starting in position pos.
+// Returns 1 if the end position is winning for white, -1 if the end position
+// is winning for black and otherwise 0.
 inline
-int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
+int playout_random(Pos pos, int max_moves, bool verbose)
+{
+  std::random_device rd;
+  std::mt19937 mt(rd());
+
+  // returns a random integer in the range [0, ..., n)
+  auto random_int = [&mt](int n)
+  {
+    std::uniform_int_distribution<int> dist(0, n - 1);
+    return dist(mt);
+  };
+
+  if (verbose)
+  {
+    pos::disp(pos);
+  }
+
+  if (!can_move(pos, pos.turn()))
+  {
+    return pos.turn() == White ? -1 : 1;
+  }
+
+  if (bb::pos_is_load(pos))
+  {
+    return egdb_lookup(pos);
+  }
+
+  for (int i = 0; i < max_moves; i++)
+  {
+    List moves;
+    gen_moves(moves, pos);
+    int k = random_int(moves.size());
+
+    if (verbose)
+    {
+      std::cout << move::to_string(moves.move(k), pos) << "\n";
+    }
+
+    pos = pos.succ(moves.move(k));
+
+    if (!can_move(pos, pos.turn()))
+    {
+      return pos.turn() == White ? -1 : 1;
+    }
+
+    if (bb::pos_is_load(pos))
+    {
+      return egdb_lookup(pos);
+    }
+  }
+
+  return 0; // return 0 if the game did not end after max_moves moves
+}
+
+// Plays a game using the Scan minimax search
+// Returns 1 if the end position is winning for white, -1 if the end position
+// is winning for black and otherwise 0.
+inline
+int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double max_time = 1.0, int max_moves = 100, int64 max_nodes = 1E12, bool verbose = false)
 {
   ScanPlayer player;
-  return player.loop(pos, depth, time, max_moves, max_nodes, verbose);
+  return player.play(pos, depth, max_time, max_moves, max_nodes, verbose);
 }
 
 inline

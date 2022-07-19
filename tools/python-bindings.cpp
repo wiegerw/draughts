@@ -398,6 +398,7 @@ PYBIND11_MODULE(draughts1, m)
   // added
   m.def("run_terminal_game", run_terminal_game);
   m.def("playout_minimax", draughts::playout_minimax);
+  m.def("playout_random", draughts::playout_random);
   m.def("play_forced_moves", draughts::play_forced_moves);
   m.def("piece_count_eval", draughts::piece_count_eval);
   m.def("naive_rollout", draughts::naive_rollout);
