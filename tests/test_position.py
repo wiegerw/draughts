@@ -176,6 +176,13 @@ class Test(unittest.TestCase):
         node = make_node(pos)
         search(so, node, si)
 
+        max_depth = 15
+        max_time = 5.0
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual('17-22', print_move(move, pos))
+
+
     def test_play_forced_moves(self):
         text1 = '''
            x   .   .   .   .
@@ -310,6 +317,69 @@ class Test(unittest.TestCase):
         expected = parse_position(text2)
         pos1.flip()
         self.assertEqual(expected, pos1)
+
+    def test_pos_to_numpy(self):
+        text = '''
+           O   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   .   . 
+         .   .   .   .   .   
+           .   x   x   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   o   . 
+         X   .   .   .   o   B
+         '''
+        pos = parse_position(text)
+
+        expected = list(map(int, '''
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 1 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 1 0 1 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 1 0 0 
+            0 0 0 0 0 0 0 0 0 1 
+            
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 1 0 0 0 0 0 0 0 0 
+            
+            0 1 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0 
+            0 0 0 0 0 0 0 0 0 0'''.strip().split()))
+        index = pos_to_numpy1(pos)
+        print(f'index\n{index}')
+        self.assertEqual(expected, index.tolist())
 
 
 if __name__ == '__main__':

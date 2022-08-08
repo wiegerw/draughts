@@ -22,6 +22,7 @@
 #include "scan/terminal.hpp"
 #include "scan/tt.hpp"
 #include "scan/var.hpp"
+#include <pybind11/numpy.h>
 
 namespace draughts {
 
@@ -282,6 +283,27 @@ class ScanPlayer
       return 0;
     }
 };
+
+inline
+std::pair<int, Move> scan_search(const Pos& pos, int max_depth, double max_time)
+{
+  Search_Input si;
+  si.move = true;
+  si.book = false;
+  si.depth = max_depth;
+  si.nodes = 1E12; // fixed
+  si.time = max_time;
+  si.input = true;
+  si.output = Output_None;
+
+  G_TT.clear(); // clear the transposition table
+
+  Node node(pos);
+
+  Search_Output so;
+  search(so, node, si);
+  return {so.score, so.move};
+}
 
 // Plays at most max_moves random moves starting in position pos.
 // Returns 1 if the end position is winning for white, -1 if the end position

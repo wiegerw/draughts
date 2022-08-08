@@ -21,8 +21,59 @@
 #include "draughts/scan.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <algorithm>
 
 namespace py = pybind11;
+
+// Converts a position into a 1-dimensional array of size 400 representing 4 10x10 board positions:
+// - player men
+// - opponent men
+// - player kings
+// - opponent kings
+inline
+py::array_t<int> pos_to_numpy1(const Pos& pos)
+{
+  py::array_t<int> result(400); // TODO: make sure array_t is initialized with zeroes
+  py::buffer_info info = result.request();
+  int* ptr = reinterpret_cast<int*>(info.ptr);
+  std::fill(ptr, ptr + 400, 0);
+
+  for (int f = 1; f <= 50; f++)
+  {
+    if (pos.is_empty_(f))
+    {
+      continue;
+    }
+
+    int i = 2*f - 1;
+    bool is_king = pos.is_king(f);
+    bool is_white = pos.is_white(f);
+    bool is_white_to_move = pos.is_white_to_move();
+    if (is_white == is_white_to_move) // the piece belongs to the player
+    {
+      if (is_king)
+      {
+        ptr[200 + i] = 1;
+      }
+      else
+      {
+        ptr[i] = 1;
+      }
+    }
+    else
+    {
+      if (is_king)
+      {
+        ptr[300 + i] = 1;
+      }
+      else
+      {
+        ptr[100 + i] = 1;
+      }
+    }
+  }
+  return result;
+}
 
 // Takes care of initialization
 struct ScanModule
@@ -416,4 +467,6 @@ PYBIND11_MODULE(draughts1, m)
 
   m.def("parse_pdn_game", draughts::parse_pdn_game);
   m.def("parse_pdn_file", draughts::parse_pdn_file);
+  m.def("scan_search", draughts::scan_search);
+  m.def("pos_to_numpy1", pos_to_numpy1, py::return_value_policy::move);
 }
