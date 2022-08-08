@@ -53,7 +53,7 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
     {
       if (is_king)
       {
-        ptr[200 + i] = 1;
+        ptr[100 + i] = 1;
       }
       else
       {
@@ -68,7 +68,7 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
       }
       else
       {
-        ptr[100 + i] = 1;
+        ptr[200 + i] = 1;
       }
     }
   }
