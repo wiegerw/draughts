@@ -284,27 +284,6 @@ class ScanPlayer
     }
 };
 
-inline
-std::pair<int, Move> scan_search(const Pos& pos, int max_depth, double max_time)
-{
-  Search_Input si;
-  si.move = true;
-  si.book = false;
-  si.depth = max_depth;
-  si.nodes = 1E12; // fixed
-  si.time = max_time;
-  si.input = true;
-  si.output = Output_None;
-
-  G_TT.clear(); // clear the transposition table
-
-  Node node(pos);
-
-  Search_Output so;
-  search(so, node, si);
-  return {so.score, so.move};
-}
-
 // Plays at most max_moves random moves starting in position pos.
 // Returns 1 if the end position is winning for white, -1 if the end position
 // is winning for black and otherwise 0.
@@ -373,10 +352,10 @@ int playout_minimax(const Pos& pos, Depth depth = Depth_Max, double max_time = 1
   return player.play(pos, depth, max_time, max_moves, max_nodes, verbose);
 }
 
+// Plays all forced moves and returns the resulting position
 inline
-Pos play_forced_moves(const Pos& bs)
+Pos play_forced_moves(Pos pos)
 {
-  Pos pos = bs;
   List moves;
   gen_moves(moves, pos);
   while (moves.size() == 1)
@@ -385,6 +364,48 @@ Pos play_forced_moves(const Pos& bs)
     gen_moves(moves, pos);
   }
   return pos;
+}
+
+// Does a minimax search with the given maximal depth and maximal time.
+// Forced moves are played and do not attribute to the depth.
+// Returns the score and the best move.
+inline
+std::pair<int, Move> scan_search(Pos pos, int max_depth, double max_time)
+{
+  // if there are no possible moves, determine the result directly
+  if (!can_move(pos, pos.turn()))
+  {
+    Move best_move = move::None;
+    Score best_score = pos.turn() == White ? -score::Inf : score::Inf;
+    return {best_score, best_move};
+  }
+
+  Search_Input si;
+  si.move = true;
+  si.book = false;
+  si.depth = max_depth;
+  si.nodes = 1E12; // fixed
+  si.time = max_time;
+  si.input = true;
+  si.output = Output_None;
+
+  G_TT.clear(); // clear the transposition table
+
+  Node node(pos);
+
+  Search_Output so;
+  search(so, node, si);
+
+  // if there was only one possible move, the search does not provide a score
+  if (so.score == score::None)
+  {
+    Move best_move = so.move;
+    pos = play_forced_moves(pos);
+    auto [score, move] = scan_search(pos, max_depth, max_time);
+    return {score, best_move};
+  }
+
+  return {so.score, so.move};
 }
 
 // The return value ranges between 0 (black wins) and 1 (white wins).
@@ -416,10 +437,13 @@ int piece_count_eval(const Pos& pos)
   return wm + 3*wk - bm - 3*bk;
 }
 
+// Uses a naive approach to obtain a win/draw/loss result for a given position.
+// All forced moves are played, and then a piece count is done to determine the result.
+// Returns 1, 0, -1 for win/draw/loss.
 inline
-double naive_rollout(const Pos& bs)
+double naive_rollout(const Pos& pos)
 {
-  return normalize_eval(piece_count_eval(play_forced_moves(bs)));
+  return normalize_eval(piece_count_eval(play_forced_moves(pos)));
 }
 
 } // namespace draughts

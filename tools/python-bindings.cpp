@@ -293,6 +293,12 @@ PYBIND11_MODULE(draughts1, m)
     .def_readwrite("ply_sum", &Search_Output::ply_sum)
     ;
 
+  // special values for the score of a search
+  m.def("score_inf", []{ return score::Inf; });
+  m.def("score_bb_inf", []{ return score::BB_Inf; });
+  m.def("score_eval_inf", []{ return score::Eval_Inf; });
+  m.def("score_none", []{ return score::None; });
+
   m.def("search", search);
   m.def("quick_move", quick_move);
   m.def("quick_score", quick_score);

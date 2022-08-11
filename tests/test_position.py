@@ -176,12 +176,92 @@ class Test(unittest.TestCase):
         node = make_node(pos)
         search(so, node, si)
 
+    def test_scan_search(self):
         max_depth = 15
         max_time = 5.0
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   x   . 
+         x   x   x   x   .   
+           x   .   x   x   o 
+         x   o   o   .   o   
+           .   o   o   .   o 
+         .   o   o   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   B;
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
         self.assertEqual('17-22', print_move(move, pos))
 
+        # forced capture
+        text = '''
+           .   .   .   .   . 
+         .   .   .   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   o   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         X   .   .   X   X   B
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual('50x4', print_move(move, pos))
+        self.assertEqual(-score_inf(), score)
+
+        # one possible move
+        text = '''
+           .   .   .   .   x 
+         .   .   .   .   .   
+           .   .   .   .   o 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual('15-10', print_move(move, pos))
+        self.assertEqual(-score_inf(), score)
+
+        # no possible moves
+        text = '''
+           .   .   .   x   . 
+         .   .   .   x   x   
+           .   .   .   x   o 
+         .   .   .   .   o   
+           .   .   .   .   o 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(move_none(), move)
+        self.assertEqual('1-1', print_move(move, pos))  # move_none() is printed as '1-1'
+        self.assertEqual(-score_inf(), score)
 
     def test_play_forced_moves(self):
         text1 = '''
