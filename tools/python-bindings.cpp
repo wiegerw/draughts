@@ -38,6 +38,12 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
   int* ptr = reinterpret_cast<int*>(info.ptr);
   std::fill(ptr, ptr + 400, 0);
 
+  auto index = [](int f)
+  {
+    bool shift = ((f - 1) / 5) % 2;
+    return 2*f - 1 - shift;
+  };
+
   for (int f = 1; f <= 50; f++)
   {
     if (pos.is_empty_(f))
@@ -45,7 +51,7 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
       continue;
     }
 
-    int i = 2*f - 1;
+    int i = index(f);
     bool is_king = pos.is_king(f);
     bool is_white = pos.is_white(f);
     bool is_white_to_move = pos.is_white_to_move();
@@ -53,11 +59,11 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
     {
       if (is_king)
       {
-        ptr[100 + i] = 1;
+        ptr[200 + i] = 1;
       }
       else
       {
-        ptr[i] = 1;
+        ptr[0 + i] = 1;
       }
     }
     else
@@ -68,7 +74,7 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
       }
       else
       {
-        ptr[200 + i] = 1;
+        ptr[100 + i] = 1;
       }
     }
   }
