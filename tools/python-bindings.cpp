@@ -19,6 +19,7 @@
 #include "draughts/egdb.h"
 #include "draughts/pdn.h"
 #include "draughts/scan.h"
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <algorithm>
@@ -177,6 +178,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_white", &Pos::is_white)
     .def("is_black", &Pos::is_black)
     .def("is_white_to_move", &Pos::is_white_to_move)
+    .def("opponent_has_no_pieces", &Pos::opponent_has_no_pieces)
     .def("flip", &Pos::flip)
     .def("put_piece", &Pos::put_piece)
     .def("white_man_count", [](const Pos& pos) { return bit::count(pos.wm()); })

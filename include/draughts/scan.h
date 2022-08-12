@@ -22,7 +22,6 @@
 #include "scan/terminal.hpp"
 #include "scan/tt.hpp"
 #include "scan/var.hpp"
-#include <pybind11/numpy.h>
 
 namespace draughts {
 
@@ -42,13 +41,14 @@ std::string remove_whitespace(std::string text)
 }
 
 inline
-bool is_white_to_move(const Pos & pos)
+bool is_white_to_move(const Pos& pos)
 {
   return pos.turn() == White;
 }
 
 inline
-Piece_Side piece_side(const Pos & pos, Square sq) {
+Piece_Side piece_side(const Pos& pos, Square sq)
+{
 
   int ps = (bit::bit(pos.empty(), sq) << 2)
            | (bit::bit(pos.king(),  sq) << 1)
@@ -376,7 +376,16 @@ std::pair<int, Move> scan_search(Pos pos, int max_depth, double max_time)
   if (!can_move(pos, pos.turn()))
   {
     Move best_move = move::None;
-    Score best_score = pos.turn() == White ? -score::Inf : score::Inf;
+    Score best_score = pos.turn() == White ? -score::Inf: score::Inf;
+    return {best_score, best_move};
+  }
+
+  // if the opponent has no pieces, determine the result directly
+  // N.B. This is necessary if the position is in the endgame database.
+  if (pos.opponent_has_no_pieces())
+  {
+    Move best_move = move::None;
+    Score best_score = pos.is_white_to_move() ? score::Inf: -score::Inf;
     return {best_score, best_move};
   }
 

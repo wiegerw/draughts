@@ -100,6 +100,12 @@ public:
       return m_turn == Side::White;
     }
 
+    bool opponent_has_no_pieces() const
+    {
+      Side side = is_white_to_move() ? Side::Black : Side::White;
+      return m_side[side] == Pos().m_side[side];
+    }
+
     void info() const
     {
       std::cout << std::bitset<64>(m_side[Side::White]) << " "

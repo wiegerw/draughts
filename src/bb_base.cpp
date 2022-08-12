@@ -60,7 +60,7 @@ static bool is_load (int size);
 
 void init() {
 
-   std::cout << "init bitbase" << std::endl;
+   std::cout << "init bitbase (size = " << var::BB_Size << ")" << std::endl;
 
    for (int i = 0; i < ID_Size; i++) {
 

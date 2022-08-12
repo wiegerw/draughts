@@ -56,7 +56,7 @@ class Test(unittest.TestCase):
            .   x   .   x   . 
          .   .   .   .   .   
            .   .   .   .   . 
-         .   .   .   .   .   W;
+         .   .   .   .   .   W
         '''
         pos = parse_position(text)
         display_position(pos)
@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
            .   x   .   x   . 
          .   .   .   .   .   
            .   .   .   .   . 
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         pos = parse_position(text)
         display_position(pos)
@@ -115,7 +115,7 @@ class Test(unittest.TestCase):
            .   o   o   .   o 
          .   o   o   o   .   
            .   .   .   .   . 
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         pos1 = parse_position(text1)
         pos1.put_piece(3, False, True)
@@ -133,7 +133,7 @@ class Test(unittest.TestCase):
            .   o   o   .   o 
          .   o   o   o   .   
            .   .   o   .   . 
-         .   .   O   .   .   B;
+         .   .   O   .   .   B
         '''
         pos2 = parse_position(text2)
 
@@ -155,7 +155,7 @@ class Test(unittest.TestCase):
            .   o   o   .   o 
          .   o   o   o   .   
            .   .   .   .   . 
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         pos = parse_position(text)
         display_position(pos)
@@ -190,7 +190,7 @@ class Test(unittest.TestCase):
            .   o   o   .   o 
          .   o   o   o   .   
            .   .   .   .   . 
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         pos = parse_position(text)
         display_position(pos)
@@ -263,6 +263,46 @@ class Test(unittest.TestCase):
         self.assertEqual('1-1', print_move(move, pos))  # move_none() is printed as '1-1'
         self.assertEqual(-score_inf(), score)
 
+        # opponent has no pieces, outside endgame database
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   o 
+         .   .   .   .   o   
+           .   .   .   .   o 
+         .   .   .   .   o   
+           .   .   .   .   o 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(score_inf(), score)
+
+        # opponent has no pieces, inside endgame database
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   o 
+         .   .   .   .   o   
+           .   .   .   .   o 
+         .   .   .   .   .   
+           .   .   .   .   o 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        # display_position(pos)  # N.B. this crashes!
+        print('eval', eval_position(pos))
+        score, move = scan_search(pos, max_depth, max_time)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(score_inf(), score)
+
     def test_play_forced_moves(self):
         text1 = '''
            x   .   .   .   .
@@ -274,7 +314,7 @@ class Test(unittest.TestCase):
            x   .   .   .   .
          o   .   o   o   o
            .   .   .   .   o
-         .   .   .   .   .   W;
+         .   .   .   .   .   W
         '''
         pos1 = parse_position(text1)
         text2 = '''
@@ -287,7 +327,7 @@ class Test(unittest.TestCase):
            .   .   .   .   .
          .   .   .   .   o
            .   .   .   .   .
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         expected = parse_position(text2)
         pos = play_forced_moves(pos1)
@@ -309,7 +349,7 @@ class Test(unittest.TestCase):
            .   o   o   o   .
          .   .   .   .   .
            .   .   .   .   .
-         .   .   .   .   o   W;
+         .   .   .   .   o   W
         '''
         expected_piece_count = 2
         expected_rollout = 1
@@ -325,7 +365,7 @@ class Test(unittest.TestCase):
            .   o   o   o   .
          .   .   O   O   .
            .   .   .   .   .
-         .   .   .   .   o   W;
+         .   .   .   .   o   W
         '''
         expected_piece_count = -1
         expected_rollout = 0
@@ -341,7 +381,7 @@ class Test(unittest.TestCase):
            x   .   .   .   .
          o   .   o   o   o
            .   .   .   .   o
-         .   .   .   .   .   W;
+         .   .   .   .   .   W
         '''
         expected_piece_count = 0
         expected_rollout = 0.5
@@ -358,7 +398,7 @@ class Test(unittest.TestCase):
            .   o   o   .   o 
          .   o   o   o   .   
            .   .   .   .   . 
-         .   .   .   .   .   B;
+         .   .   .   .   .   B
         '''
         pos = parse_position(text)
         import pickle
@@ -379,7 +419,7 @@ class Test(unittest.TestCase):
            .   .   .   .   .
          .   .   .   .   .
            .   .   .   .   .
-         o   O   .   .   .   W;
+         o   O   .   .   .   W
         '''
         pos1 = parse_position(text1)
         text2 = '''
@@ -392,7 +432,7 @@ class Test(unittest.TestCase):
            .   .   .   .   .
          .   .   .   .   .
            .   .   .   .   .
-         .   .   .   O   o   B;
+         .   .   .   O   o   B
         '''
         expected = parse_position(text2)
         pos1.flip()
@@ -522,6 +562,37 @@ class Test(unittest.TestCase):
         index = pos_to_numpy1(pos)
         print(f'index\n{index}')
         self.assertEqual(expected, index.tolist())
+
+    def test_opponent_has_no_pieces(self):
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   o   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   
+           .   .   .   .   . 
+         .   .   O   .   .   W
+        '''
+        pos = parse_position(text)
+        self.assertTrue(pos.opponent_has_no_pieces())
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   x   .   .   .   
+           x   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   X   .   .   B
+        '''
+        pos = parse_position(text)
+        self.assertTrue(pos.opponent_has_no_pieces())
 
 
 if __name__ == '__main__':
