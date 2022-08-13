@@ -248,7 +248,7 @@ class Test(unittest.TestCase):
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
         self.assertEqual('50x4', print_move(move, pos))
-        self.assertEqual(-score_inf(), score)
+        self.assertEqual(score_none(), score)  # there is no score available in case of a forced move
 
         # one possible move
         text = '''
@@ -269,7 +269,7 @@ class Test(unittest.TestCase):
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
         self.assertEqual('15-10', print_move(move, pos))
-        self.assertEqual(-score_inf(), score)
+        self.assertEqual(score_none(), score)  # there is no score available in case of a forced move
 
         # no possible moves
         text = '''
@@ -307,11 +307,8 @@ class Test(unittest.TestCase):
          .   .   .   .   .   W
         '''
         pos = parse_position(text)
-        display_position(pos)
-        print('eval', eval_position(pos))
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(score_inf(), score)
+        assert pos.opponent_has_no_pieces()
+        # N.B. scan_search does not handle this case!
 
         # opponent has no pieces, inside endgame database
         text = '''
@@ -327,11 +324,8 @@ class Test(unittest.TestCase):
          .   .   .   .   .   W
         '''
         pos = parse_position(text)
-        # display_position(pos)  # N.B. this crashes!
-        print('eval', eval_position(pos))
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(score_inf(), score)
+        assert pos.opponent_has_no_pieces()
+        # N.B. scan_search does not handle this case!
 
     def test_play_forced_moves(self):
         text1 = '''
