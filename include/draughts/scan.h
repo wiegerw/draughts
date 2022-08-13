@@ -380,15 +380,6 @@ std::pair<int, Move> scan_search(Pos pos, int max_depth, double max_time)
     return {best_score, best_move};
   }
 
-  // if the opponent has no pieces, determine the result directly
-  // N.B. This is necessary if the position is in the endgame database.
-  if (pos.opponent_has_no_pieces())
-  {
-    Move best_move = move::None;
-    Score best_score = pos.is_white_to_move() ? score::Inf: -score::Inf;
-    return {best_score, best_move};
-  }
-
   Search_Input si;
   si.move = true;
   si.book = false;
@@ -398,21 +389,10 @@ std::pair<int, Move> scan_search(Pos pos, int max_depth, double max_time)
   si.input = true;
   si.output = Output_None;
 
-  G_TT.clear(); // clear the transposition table
-
   Node node(pos);
 
   Search_Output so;
   search(so, node, si);
-
-  // if there was only one possible move, the search does not provide a score
-  if (so.score == score::None)
-  {
-    Move best_move = so.move;
-    pos = play_forced_moves(pos);
-    auto [score, move] = scan_search(pos, max_depth, max_time);
-    return {score, best_move};
-  }
 
   return {so.score, so.move};
 }

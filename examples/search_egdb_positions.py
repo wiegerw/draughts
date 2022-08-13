@@ -26,11 +26,6 @@ def scan_search_python(pos, max_depth, max_time):
         best_score = -score_inf() if pos.is_white_to_move() else score_inf()
         return best_score, best_move
 
-    if pos.opponent_has_no_pieces():
-        best_move = move_none()
-        best_score = score_inf() if pos.is_white_to_move() else -score_inf()
-        return best_score, best_move
-
     si = SearchInput()
     si.move = True
     si.book = False
@@ -40,17 +35,9 @@ def scan_search_python(pos, max_depth, max_time):
     si.input = True
     si.output = OutputType.None_
 
-    clear_global_transition_table()
-
     node = make_node(pos)
     so = SearchOutput()
     search(so, node, si)
-
-    if so.score == score_none():
-        best_move = so.move
-        pos = play_forced_moves(pos)
-        score, move = scan_search(pos, max_depth, max_time)
-        return score, best_move
 
     return so.score, so.move
 
@@ -75,13 +62,13 @@ def search_egdb_positions(nw, nb, nW, nB, search, max_depth, max_time, max_posit
     count = 0
     count_score_zero = 0
     while enumerator.next():
-        count += 1
         pos = enumerator.position()
         score, move = search(pos, max_depth, max_time)
-        if count < 100:
-            print(f'score: {score}')
         if score == 0:
             count_score_zero += 1
+        if score == score_none():  # the position has only one legal move, so skip it
+            continue
+        count += 1
         if max_positions and count >= max_positions:
             break
     print(f"searched {count} positions in {timer.elapsed():0.4f} seconds ({count_score_zero} positions with score 0)")
@@ -94,7 +81,13 @@ if __name__ == '__main__':
     nW = 0
     nB = 0
     max_depth = 15
-    max_time = 1.0
-    max_positions = 100
+    max_time = 5.0
+    max_positions = 1000
+
+    print('python search')
     search_egdb_positions(nw, nb, nW, nB, scan_search_python, max_depth, max_time, max_positions)
+
+    clear_global_transition_table()
+
+    print('cpp search')
     search_egdb_positions(nw, nb, nW, nB, scan_search, max_depth, max_time, max_positions)
