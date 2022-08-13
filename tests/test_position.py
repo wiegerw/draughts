@@ -176,6 +176,36 @@ class Test(unittest.TestCase):
         node = make_node(pos)
         search(so, node, si)
 
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   x   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   o   o   o   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        print('eval', eval_position(pos))
+
+        si = SearchInput()
+        si.move = True
+        si.book = False
+        si.depth = 15
+        si.nodes = 1000000000000
+        si.time = 5.0
+        si.input = True
+        si.output = OutputType.Terminal
+
+        so = SearchOutput()
+        node = make_node(pos)
+        search(so, node, si)
+
+
     def test_scan_search(self):
         max_depth = 15
         max_time = 5.0

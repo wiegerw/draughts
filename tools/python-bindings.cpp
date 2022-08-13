@@ -257,7 +257,7 @@ PYBIND11_MODULE(draughts1, m)
   ;
 
   py::enum_<Output_Type>(m, "OutputType", "The output type")
-    .value("None", Output_None, "No output")
+    .value("None_", Output_None, "No output")
     .value("Terminal", Output_Terminal, "Print output to terminal")
     .value("Hub", Output_Hub, "Print output to hub")
     ;
@@ -351,6 +351,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("probe", &TT::probe)
     ;
 
+  m.def("clear_global_transition_table", []() { G_TT.clear(); });
   m.def("tt_is_lower", is_lower);
   m.def("tt_is_upper", is_upper);
   m.def("tt_is_exact", is_exact);
