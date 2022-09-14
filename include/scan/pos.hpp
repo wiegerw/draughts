@@ -142,6 +142,13 @@ public:
       }
     }
 
+    Pos flipped() const
+    {
+      Pos result = *this;
+      result.flip();
+      return result;
+    }
+
     const std::array<Bit, Piece_Size>& piece_array() const
     {
       return m_piece;

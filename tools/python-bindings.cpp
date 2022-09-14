@@ -34,7 +34,7 @@ namespace py = pybind11;
 inline
 py::array_t<int> pos_to_numpy1(const Pos& pos)
 {
-  py::array_t<int> result(400); // TODO: make sure array_t is initialized with zeroes
+  py::array_t<int> result(400);
   py::buffer_info info = result.request();
   int* ptr = reinterpret_cast<int*>(info.ptr);
   std::fill(ptr, ptr + 400, 0);
@@ -76,6 +76,60 @@ py::array_t<int> pos_to_numpy1(const Pos& pos)
       else
       {
         ptr[100 + i] = 1;
+      }
+    }
+  }
+  return result;
+}
+
+// This is a simpler version of pos_to_numpy1 where it does not contain the empty unused spaces of the
+// board. It returns a string of 1s and 0s with size of 200 (4x50) corresponding to the positions of
+// white men pieces, black men pieces, white king pieces and black king pieces. If the input board
+// position is a black to move, then the board will be flipped first.
+inline
+py::array_t<int> pos_to_numpy2(const Pos& pos)
+{
+  py::array_t<int> result(200);
+  py::buffer_info info = result.request();
+  int* ptr = reinterpret_cast<int*>(info.ptr);
+  std::fill(ptr, ptr + 200, 0);
+
+  auto index = [](int f)
+  {
+    return f - 1;
+  };
+
+  for (int f = 1; f <= 50; f++)
+  {
+    if (pos.is_empty_(f))
+    {
+      continue;
+    }
+
+    int i = index(f);
+    bool is_king = pos.is_king(f);
+    bool is_white = pos.is_white(f);
+    bool is_white_to_move = pos.is_white_to_move();
+    if (is_white == is_white_to_move) // the piece belongs to the player
+    {
+      if (is_king)
+      {
+        ptr[100 + i] = 1;
+      }
+      else
+      {
+        ptr[0 + i] = 1;
+      }
+    }
+    else
+    {
+      if (is_king)
+      {
+        ptr[150 + i] = 1;
+      }
+      else
+      {
+        ptr[50 + i] = 1;
       }
     }
   }
@@ -179,7 +233,7 @@ PYBIND11_MODULE(draughts1, m)
     .def("is_black", &Pos::is_black)
     .def("is_white_to_move", &Pos::is_white_to_move)
     .def("opponent_has_no_pieces", &Pos::opponent_has_no_pieces)
-    .def("flip", &Pos::flip)
+    .def("flip", &Pos::flipped)
     .def("put_piece", &Pos::put_piece)
     .def("white_man_count", [](const Pos& pos) { return bit::count(pos.wm()); })
     .def("black_man_count", [](const Pos& pos) { return bit::count(pos.bm()); })
@@ -484,4 +538,5 @@ PYBIND11_MODULE(draughts1, m)
   m.def("parse_pdn_file", draughts::parse_pdn_file);
   m.def("scan_search", draughts::scan_search);
   m.def("pos_to_numpy1", pos_to_numpy1, py::return_value_policy::move);
+  m.def("pos_to_numpy2", pos_to_numpy2, py::return_value_policy::move);
 }

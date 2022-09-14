@@ -459,10 +459,9 @@ class Test(unittest.TestCase):
          .   .   .   O   o   B
         '''
         expected = parse_position(text2)
-        pos1.flip()
-        self.assertEqual(expected, pos1)
+        self.assertEqual(expected, pos1.flip())
 
-    def test_pos_to_numpy(self):
+    def test_pos_to_numpy1(self):
         text = '''
            O   .   .   .   . 
          .   .   .   .   .   
@@ -584,6 +583,49 @@ class Test(unittest.TestCase):
             0 0 0 0 0 0 0 0 0 0
             0 0 0 0 0 0 0 0 0 0'''.strip().split()))
         index = pos_to_numpy1(pos)
+        print(f'index\n{index}')
+        self.assertEqual(expected, index.tolist())
+
+    def test_pos_to_numpy2(self):
+        text = '''
+           O   .   .   .   . 
+         .   .   .   .   .   
+           .   .   x   .   . 
+         .   .   .   .   .   
+           .   x   x   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   o   . 
+         X   .   .   .   o   B
+         '''
+        pos = parse_position(text)
+
+        expected = list(map(int, '''
+            0 0 0 0 0 0 0 0 0 0
+            0 0 1 0 0 0 0 0 0 0
+            0 1 1 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 1 0 0 0 0 0 1
+            
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 1 0 0 0 0
+            
+            1 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0
+            0 0 0 0 0 0 0 0 0 0'''.strip().split()))
+        index = pos_to_numpy2(pos)
         print(f'index\n{index}')
         self.assertEqual(expected, index.tolist())
 

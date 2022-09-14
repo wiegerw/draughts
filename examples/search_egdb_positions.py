@@ -55,7 +55,6 @@ def init_scan():
     Scan.init()
 
 
-# N.B. It turns out that this way of searching has an enormous overhead. It's not yet clear what is causing this.
 def search_egdb_positions(nw, nb, nW, nB, search, max_depth, max_time, max_positions=None):
     enumerator = EGDBEnumerator(nw, nb, nW, nB)
     timer = Timer()
