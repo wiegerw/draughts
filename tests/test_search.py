@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
         Scan.update()
         Scan.init()
 
-    def test_search(self):
+    def atest_scan_search(self):
         text = '''
            .   .   .   .   . 
          .   .   .   x   .   
@@ -104,6 +104,48 @@ class Test(unittest.TestCase):
         max_time = 5.0
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
+
+
+    def test_minimax_search(self):
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   x   .   
+           .   .   .   .   . 
+         x   .   x   .   .   
+           .   .   .   .   . 
+         .   o   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        max_depth = 1
+        score, move = minimax_search(pos, max_depth)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(2, score)
+        self.assertEqual('37-31', print_move(move, pos))
+
+        text = '''
+           .   x   .   .   . 
+         .   .   x   .   x   
+           .   .   .   .   . 
+         .   x   .   o   .   
+           .   .   .   .   . 
+         x   .   o   .   .   
+           .   .   .   .   . 
+         .   o   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   W
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        max_depth = 3
+        score, move = minimax_search(pos, max_depth)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(3, score)
+        self.assertEqual('19-13', print_move(move, pos))
 
 
 if __name__ == '__main__':

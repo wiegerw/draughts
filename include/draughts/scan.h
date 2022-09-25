@@ -435,6 +435,85 @@ double naive_rollout(const Pos& pos)
   return normalize_eval(piece_count_eval(play_forced_moves(pos)));
 }
 
+// count pieces
+inline
+Score simple_eval(const Pos & pos)
+{
+  int nwm = bit::count(pos.wm());
+  int nbm = bit::count(pos.bm());
+  int nwk = bit::count(pos.wk());
+  int nbk = bit::count(pos.bk());
+  return 3 * nwk + nwm - 3 * nbk - nbm;
+}
+
+template <bool PlayForcedMoves = false>
+int negamax_depth(const Pos& u, unsigned int depth, int alpha = -score::Inf, int beta = score::Inf)
+{
+  List moves;
+  gen_moves(moves, u);
+  if constexpr (PlayForcedMoves)
+  {
+    if (moves.size() == 1)
+    {
+      Pos v = u.succ(moves[0]);
+      return -negamax_depth<PlayForcedMoves>(v, depth, -beta, -alpha);
+    }
+  }
+  if (depth == 0 || moves.size() == 0)
+  {
+    return u.is_white_to_move() ? simple_eval(u) : -simple_eval(u);
+  }
+  Score score = -score::Inf;
+  for (Move m: moves)
+  {
+    Pos v = u.succ(m);
+    score = std::max(score, -negamax_depth<PlayForcedMoves>(v, depth - 1, -beta, -alpha));
+    alpha = std::max(alpha, score);
+    if (alpha >= beta)
+    {
+      break;
+    }
+  }
+  return score;
+}
+
+template <bool PlayForcedMoves = false>
+std::pair<Score, Move> negamax_depth_best_move(const Pos& u, unsigned int depth, int alpha = -score::Inf, int beta = score::Inf)
+{
+  List moves;
+  gen_moves(moves, u);
+  if constexpr (PlayForcedMoves)
+  {
+    if (moves.size() == 1)
+    {
+      auto v = u.succ(moves[0]);
+      return { -negamax_depth<PlayForcedMoves>(v, depth, -beta, -alpha), moves[0] };
+    }
+  }
+  if (depth == 0 || moves.size() == 0)
+  {
+    return { u.is_white_to_move() ? simple_eval(u) : -simple_eval(u), move::None };
+  }
+  Score best_score = -score::Inf;
+  Move best_move;
+  for (const auto& m: moves)
+  {
+    auto v = u.succ(m);
+    int score = -negamax_depth<PlayForcedMoves>(v, depth - 1, -beta, -alpha);
+    if (score > best_score)
+    {
+      best_score = score;
+      best_move = m;
+    }
+    alpha = std::max(alpha, score);
+    if (alpha >= beta)
+    {
+      break;
+    }
+  }
+  return { best_score, best_move };
+}
+
 } // namespace draughts
 
 #endif // DRAUGHTS_SCAN_H
