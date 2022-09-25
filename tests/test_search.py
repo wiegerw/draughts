@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
         Scan.update()
         Scan.init()
 
-    def atest_scan_search(self):
+    def test_scan_search(self):
         text = '''
            .   .   .   .   . 
          .   .   .   x   .   
