@@ -50,6 +50,12 @@ public:
    const Move * begin () const { return &m_move[0]; }
    const Move * end   () const { return &m_move[m_size]; }
 
+   void swap(int i, int j)
+   {
+     std::swap(m_move[i], m_move[j]);
+     std::swap(m_score[i], m_score[j]);
+   }
+
 private:
 
    static uint64 move_order (Move mv, const Pos & pos);
