@@ -27,8 +27,6 @@ def init_scan():
 
 
 class MCTSNode(object):
-    index = 0
-
     def __init__(self, state: Pos):
         self.state = state
         self.moves = generate_moves(state)
