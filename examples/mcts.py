@@ -4,6 +4,9 @@
 #  Software License, (See accompanying file license.txt or copy at
 #  https://www.gnu.org/licenses/gpl-3.0.txt)
 
+# Alternative MCTS implementation that does not use a parent attribute in the nodes.
+# Instead, a path from the root to a leaf is explicitly constructed inside the MCTS algorithm.
+
 from draughts1 import *
 
 import math

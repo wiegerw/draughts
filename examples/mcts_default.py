@@ -4,7 +4,7 @@
 #  Software License, (See accompanying file license.txt or copy at
 #  https://www.gnu.org/licenses/gpl-3.0.txt)
 
-# A modified MCTS implementation that can solve traps more easily.
+# Default MCTS implementation that uses a parent attribute in the nodes.
 
 from draughts1 import *
 
@@ -33,12 +33,12 @@ class MCTSNode(object):
         self.state = state
         self.moves = generate_moves(state)
         self.children = []
+        self.parent = None
         self.Q = 0  # the total score of the simulations through this node
         self.N = 0  # the number of simulations through this node
-        self.expanded_move_count = 0  # the number of moves in self.moves that have been expanded
 
     def is_fully_expanded(self) -> bool:
-        return self.expanded_move_count == len(self.moves)
+        return len(self.children) == len(self.moves)
 
 
 class MCTSTree(object):
@@ -51,12 +51,12 @@ class MCTSTree(object):
     # Adds a child v to node u, such that play_move(u->state, u->moves[i]) == v->state.
     # Modifies u (N.B. the order of the moves may be changed).
     def add_child(self, u: MCTSNode, i: int) -> MCTSNode:
-        j = u.expanded_move_count
+        j = len(u.children)
         if i > j:
             u.moves.swap(i, j)  # swap moves i and j
         v = MCTSNode(u.state.succ(u.moves[j]))
         u.children.append(v)
-        u.expanded_move_count += 1
+        v.parent = u
         return v
 
 
@@ -65,15 +65,21 @@ def find_move(u: Pos, v: Pos) -> Move:
     for m in moves:
         if u.succ(m) == v:
             return m
-    return move_none()
+    raise RuntimeError('find_move failed to find a move')
 
 
 def print_move_between_positions(src: Pos, dest: Pos) -> str:
     m = find_move(src, dest)
-    return print_move(m, src) if m else f'jump({print_position(dest, False, True)})'
+    return print_move(m, src)
 
 
-def print_path(path: List[MCTSNode]) -> str:
+def print_path(v: MCTSNode) -> str:
+    # construct the path from the root to v
+    path = [v]
+    while v.parent:
+        v = v.parent
+        path = [v] + path
+
     out = io.StringIO()
     for i in range(len(path) - 1):
         u = path[i]
@@ -111,7 +117,7 @@ def log_uct_scores(tree: MCTSTree, c: float) -> None:
 
 
 def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
-    i = random.randrange(u.expanded_move_count, len(u.moves))  # u.expanded_move_count <= i < len(u.moves)
+    i = random.randrange(len(u.children), len(u.moves))  # u.expanded_move_count <= i < len(u.moves)
     return tree.add_child(u, i)
 
 
@@ -130,49 +136,28 @@ def simulate(u: MCTSNode) -> float:
     return normalize(value)
 
 
-# add a connection from the root to the end of the path
-def add_root_connection(tree: MCTSTree, path: List[MCTSNode]) -> None:
-    u = tree.root()
-    v = path[-1]
-    if u.state.is_white_to_move() == v.state.is_white_to_move():
-        v = path[-2]
-    u.children.append(v)
-
-
-def mcts_traps(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
     for i in range(max_iterations):
         if i % 1000 == 0 and i > 0:
             print(f'i = {i}')
 
         u = tree.root()
-        path = [u]
-        forced = True
 
         # selection of a leaf node
         while u.moves:
-            if len(path) % 2 == 0 and len(u.moves) > 1:
-                forced = False
-
             if u.is_fully_expanded():
                 u = best_child(u, c)
-                path.append(u)
             else:
                 break
 
         # expansion of the tree
         if u.moves:
             u = expand(tree, u)
-            path.append(u)
             while len(u.moves) == 1:
                 u = tree.add_child(u, 0)
-                path.append(u)
 
             if verbose:
-                print(f'path {print_path(path)}')
-
-            # add a root connection if the line from u to v is forced
-            if forced and len(path) > 3:
-                add_root_connection(tree, path)
+                print(f'path {print_path(u)}')
         else:
             if verbose:
                 print(f'no expansion possible')
@@ -181,9 +166,11 @@ def mcts_traps(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSN
         Delta = simulate(u)
 
         # backpropagation
-        for v in path:
+        v = u
+        while v is not None:
             v.Q += Delta
             v.N += 1
+            v = v.parent
 
         if verbose:
             log_uct_scores(tree, c)
@@ -194,13 +181,13 @@ def mcts_traps(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSN
 def run():
     text = '''
            .   .   .   .   . 
-         .   x   x   x   x   
+         .   .   .   x   x   
            .   .   .   .   . 
-         .   x   .   .   x   
+         .   .   .   .   x   
            .   .   .   .   . 
-         o   .   .   .   .   
+         .   .   .   .   .   
            .   .   .   .   o 
-         .   o   o   o   o   
+         .   x   o   o   o   
            .   .   .   .   . 
          .   .   .   .   .   W
         '''
@@ -210,9 +197,9 @@ def run():
     max_iterations = 10000
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
-    u = mcts_traps(tree, c, max_iterations, verbose=True)
-    print('=== best move target ===')
-    print(print_position(u.state, True, True))
+    u = mcts(tree, c, max_iterations, verbose=True)
+    m = find_move(pos, u.state)
+    print(f'best move: {print_move(m, pos)}')
 
 
 if __name__ == '__main__':
