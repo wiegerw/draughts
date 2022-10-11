@@ -13,20 +13,7 @@ import math
 import io
 import random
 from typing import List
-
-Move = int  # moves are stored as integers
-
-def init_scan():
-    Scan.set("variant", "normal")
-    Scan.set("book", "false")
-    Scan.set("book-ply", "4")
-    Scan.set("book-margin", "4")
-    Scan.set("ponder", "false")
-    Scan.set("threads", "1")
-    Scan.set("tt-size", "24")
-    Scan.set("bb-size", "0")
-    Scan.update()
-    Scan.init()
+from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, normalize
 
 
 class MCTSNode(object):
@@ -57,19 +44,6 @@ class MCTSTree(object):
         v = MCTSNode(u.state.succ(u.moves[j]))
         u.children.append(v)
         return v
-
-
-def find_move(u: Pos, v: Pos) -> Move:
-    moves = generate_moves(u)
-    for m in moves:
-        if u.succ(m) == v:
-            return m
-    raise RuntimeError('find_move failed to find a move')
-
-
-def print_move_between_positions(src: Pos, dest: Pos) -> str:
-    m = find_move(src, dest)
-    return print_move(m, src)
 
 
 def print_path(path: List[MCTSNode]) -> str:
@@ -114,24 +88,15 @@ def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
     return tree.add_child(u, i)
 
 
-def normalize(x: float) -> float:
-    if x > 0:
-        return 1
-    elif x < 0:
-        return 0
-    else:
-        return 0.5
-
-
 # use a piece count evaluation and normalize it to values in the interval [0,1]
 def simulate(u: MCTSNode) -> float:
     value = piece_count_eval(play_forced_moves(u.state))
     return normalize(value)
 
 
-def mcts(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations) -> MCTSNode:
     for i in range(max_iterations):
-        if i % 1000 == 0 and i > 0:
+        if GlobalSettings.verbose and i % 1000 == 0 and i > 0:
             print(f'i = {i}')
 
         u = tree.root()
@@ -153,10 +118,10 @@ def mcts(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
                 u = tree.add_child(u, 0)
                 path.append(u)
 
-            if verbose:
+            if GlobalSettings.debug:
                 print(f'path {print_path(path)}')
         else:
-            if verbose:
+            if GlobalSettings.debug:
                 print(f'no expansion possible')
 
         # simulation
@@ -167,7 +132,7 @@ def mcts(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
             v.Q += Delta
             v.N += 1
 
-        if verbose:
+        if GlobalSettings.debug:
             log_uct_scores(tree, c)
 
     return best_child(tree.root(), 0)
@@ -189,10 +154,12 @@ def run():
     pos = parse_position(text)
     display_position(pos)
 
+    GlobalSettings.verbose = True
+    GlobalSettings.debug = True
     max_iterations = 10000
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
-    u = mcts(tree, c, max_iterations, verbose=True)
+    u = mcts(tree, c, max_iterations)
     m = find_move(pos, u.state)
     print(f'best move: {print_move(m, pos)}')
 
