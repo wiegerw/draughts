@@ -42,6 +42,8 @@ class MCTSNode(object):
 
 
 class MCTSTree(object):
+    first_moves = {}  # mapping that stores the first move of all jump moves
+
     def __init__(self, state: Pos):
         self.nodes = [MCTSNode(state)]
 
@@ -137,6 +139,7 @@ def add_root_connection(tree: MCTSTree, path: List[MCTSNode]) -> None:
     if u.state.is_white_to_move() == v.state.is_white_to_move():
         v = path[-2]
     u.children.append(v)
+    MCTSTree.first_moves[v] = path[1]
 
 
 def mcts_traps(tree: MCTSTree, c: float, max_iterations, verbose=False) -> MCTSNode:
@@ -210,9 +213,14 @@ def run():
     max_iterations = 10000
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
-    u = mcts_traps(tree, c, max_iterations, verbose=True)
-    print('=== best move target ===')
-    print(print_position(u.state, True, True))
+    u = mcts_traps(tree, c, max_iterations, verbose=False)
+    while True:
+        m = find_move(pos, u.state)
+        if m:
+            break
+        else:
+            u = MCTSTree.first_moves[u]
+    print(f'best move: {print_move(m, pos)}')
 
 
 if __name__ == '__main__':
