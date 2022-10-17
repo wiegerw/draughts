@@ -516,6 +516,13 @@ PYBIND11_MODULE(draughts1, m)
   m.def("terminal_init_low", init_low);
   m.def("terminal_init_high", init_high);
 
+  py::enum_<draughts::game_result>(m, "GameResult")  // endgame database value
+    .value("Draw", draughts::game_result::draw, "Draw")
+    .value("Loss", draughts::game_result::loss, "Loss")
+    .value("Win", draughts::game_result::win, "Win")
+    .value("Unknown", draughts::game_result::unknown, "Unknown")
+    ;
+
   // added
   m.def("run_terminal_game", run_terminal_game);
   m.def("playout_minimax", draughts::playout_minimax);
@@ -542,4 +549,6 @@ PYBIND11_MODULE(draughts1, m)
   m.def("pos_to_numpy2", pos_to_numpy2, py::return_value_policy::move);
   m.def("minimax_search", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, false>(pos, max_depth); });
   m.def("minimax_search_with_shuffle", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, true>(pos, max_depth); });
+  m.def("parse_pdn_game", draughts::parse_pdn_game);
+  m.def("compute_position_result", draughts::compute_position_result);
 }

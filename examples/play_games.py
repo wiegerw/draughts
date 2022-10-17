@@ -70,7 +70,7 @@ class Game(object):
         self.moves = []
         self.white = white
         self.black = black
-        self.result = GameResult.UNKNOWN
+        self.result = GameResult.Unknown
 
     def get_moves(self):
         result = []
@@ -81,11 +81,11 @@ class Game(object):
         return result
 
     def get_result(self):
-        if self.result == GameResult.WIN:
+        if self.result == GameResult.Win:
             return '2-0'
-        elif self.result == GameResult.DRAW:
+        elif self.result == GameResult.Draw:
             return '1-1'
-        elif self.result == GameResult.LOSS:
+        elif self.result == GameResult.Loss:
             return '0-2'
         return '?'
 
@@ -171,28 +171,12 @@ class MCTSTrapsPlayer(Player):
         return f'MCTS Traps max_iterations = {self.max_iterations}'
 
 
-def get_game_result(pos: Pos) -> GameResult:
-    if not pos.can_move(pos.turn()):
-        return GameResult.LOSS if pos.turn() == Side.White else GameResult.WIN
-
-    if EGDB.pos_is_load(pos):
-        value = EGDB.probe(pos)
-        if value == EGDBValue.Win:
-            return GameResult.WIN
-        elif value == EGDBValue.Draw:
-            return GameResult.DRAW
-        elif value == EGDBValue.Loss:
-            return GameResult.LOSS
-
-    return GameResult.UNKNOWN
-
-
 def play_game(player1: Player, player2: Player, max_moves: int = 150) -> Game:
     game = Game(player1.name(), player2.name())
     pos = start_position()
     for i in range(max_moves):
-        result = get_game_result(pos)
-        if result != GameResult.UNKNOWN:
+        result = compute_position_result(pos)
+        if result != GameResult.Unknown:
             game.result = result
             break
 
@@ -200,8 +184,8 @@ def play_game(player1: Player, player2: Player, max_moves: int = 150) -> Game:
         game.moves.append(m)
         pos = pos.succ(m)
 
-    if game.result == GameResult.UNKNOWN:
-        game.result = get_game_result(pos)
+    if game.result == GameResult.Unknown:
+        game.result = compute_position_result(pos)
 
     return game
 

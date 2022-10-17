@@ -526,6 +526,44 @@ std::pair<Score, Move> negamax_depth_best_move(const Pos& u, unsigned int depth,
   return { best_score, best_move };
 }
 
+enum class game_result
+{
+  win,
+  draw,
+  loss,
+  unknown
+};
+
+// Returns the game result of a position from the perspective of the white player.
+// If the result cannot be determined, Unknown is returned.
+inline
+game_result compute_position_result(Pos pos)
+{
+  pos = play_forced_moves(pos);
+
+  if (!can_move(pos, pos.turn()))
+  {
+    return (pos.turn() == Side::White) ? game_result::loss : game_result::win;
+  }
+
+  if (pos.opponent_has_no_pieces())
+  {
+    return (pos.turn() == Side::White) ? game_result::win : game_result::loss;
+  }
+
+  if (bb::pos_is_load(pos))
+  {
+    switch(bb::probe(pos))
+    {
+      case bb::Value::Draw: return game_result::draw;
+      case bb::Value::Loss: return pos.is_white_to_move() ? game_result::loss : game_result::win;
+      case bb::Value::Win: return pos.is_white_to_move() ? game_result::win : game_result:: loss;
+    }
+  }
+
+  return game_result::unknown;
+}
+
 } // namespace draughts
 
 #endif // DRAUGHTS_SCAN_H

@@ -661,6 +661,154 @@ class Test(unittest.TestCase):
         self.assertTrue(pos.opponent_has_no_pieces())
 
 
+    def test_compute_position_result(self):
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   o   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   
+           .   .   .   .   . 
+         .   .   O   .   .   W
+        '''
+        pos = parse_position(text)
+        print('hierooooooo1')
+        result = compute_position_result(pos)
+        print('hierooooooo2')
+        self.assertEqual(GameResult.Win, result)
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   o   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   
+           .   .   .   .   . 
+         .   .   O   .   .   B
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Win, result)
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   x   .   .   .   
+           x   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   X   .   .   W
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Loss, result)
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   x   .   .   .   
+           x   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   X   .   .   B
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Loss, result)
+
+        text = '''
+           .   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   
+           .   .   .   .   . 
+         .   .   O   .   .   W
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Win, result)
+
+        text = '''
+           .   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           o   .   .   .   . 
+         o   .   .   .   .   
+           .   .   .   .   . 
+         .   .   O   .   .   B
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Win, result)
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           x   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   X   o   .   W
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Loss, result)
+
+        text = '''
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           x   .   .   .   . 
+         x   .   .   .   .   
+           .   .   .   .   . 
+         .   .   X   o   .   B
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Loss, result)
+
+        text = '''
+           x   x   x   x   x 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         .   .   .   .   .   
+           .   .   .   .   . 
+         o   o   o   o   .   B
+        '''
+        pos = parse_position(text)
+        result = compute_position_result(pos)
+        self.assertEqual(GameResult.Unknown, result)
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main()

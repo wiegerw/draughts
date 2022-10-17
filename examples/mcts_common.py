@@ -31,13 +31,6 @@ class GlobalSettings(object):
     debug = False
 
 
-class GameResult(Enum):
-    WIN = 1,
-    DRAW = 0,
-    LOSS = -1,
-    UNKNOWN = -2
-
-
 def find_move(u: Pos, v: Pos) -> Move:
     moves = generate_moves(u)
     for m in moves:
