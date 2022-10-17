@@ -446,11 +446,17 @@ Score simple_eval(const Pos & pos)
   return 3 * nwk + nwm - 3 * nbk - nbm;
 }
 
-template <bool PlayForcedMoves = false>
+template <bool PlayForcedMoves = false, bool ShuffleMoves = false>
 int negamax_depth(const Pos& u, unsigned int depth, int alpha = -score::Inf, int beta = score::Inf)
 {
   List moves;
   gen_moves(moves, u);
+  if constexpr(ShuffleMoves)
+  {
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::shuffle(moves.begin(), moves.end(), mt);
+  }
   if constexpr (PlayForcedMoves)
   {
     if (moves.size() == 1)
@@ -477,11 +483,17 @@ int negamax_depth(const Pos& u, unsigned int depth, int alpha = -score::Inf, int
   return score;
 }
 
-template <bool PlayForcedMoves = false>
+template <bool PlayForcedMoves = false, bool ShuffleMoves = false>
 std::pair<Score, Move> negamax_depth_best_move(const Pos& u, unsigned int depth, int alpha = -score::Inf, int beta = score::Inf)
 {
   List moves;
   gen_moves(moves, u);
+  if constexpr(ShuffleMoves)
+  {
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::shuffle(moves.begin(), moves.end(), mt);
+  }
   if constexpr (PlayForcedMoves)
   {
     if (moves.size() == 1)

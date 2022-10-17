@@ -49,6 +49,8 @@ public:
 
    const Move * begin () const { return &m_move[0]; }
    const Move * end   () const { return &m_move[m_size]; }
+   Move * begin () { return &m_move[0]; }
+   Move * end   () { return &m_move[m_size]; }
 
    void swap(int i, int j)
    {

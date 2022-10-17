@@ -63,7 +63,6 @@ class Test(unittest.TestCase):
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
 
-
         text = '''
            .   .   .   .   .
          .   .   .   o   .
@@ -84,7 +83,6 @@ class Test(unittest.TestCase):
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
 
-
         text = '''
            .   .   .   O   .
          .   .   .   .   .
@@ -104,7 +102,6 @@ class Test(unittest.TestCase):
         max_time = 5.0
         score, move = scan_search(pos, max_depth, max_time)
         print(f'score = {score}, move = {print_move(move, pos)}')
-
 
     def test_minimax_search(self):
         text = '''
@@ -145,7 +142,48 @@ class Test(unittest.TestCase):
         score, move = minimax_search(pos, max_depth)
         print(f'score = {score}, move = {print_move(move, pos)}')
         self.assertEqual(3, score)
-        self.assertEqual('19-13', print_move(move, pos))
+        self.assertTrue(print_move(move, pos) in ['19-13', '28-22'])
+
+        text = '''
+           .   .   .   .   x 
+         .   .   .   .   x   
+           .   .   .   x   . 
+         .   .   .   .   .   
+           .   .   x   .   o 
+         .   .   .   .   .   
+           .   x   .   o   . 
+         .   .   .   .   .   
+           o   .   o   .   . 
+         .   .   .   o   .   B
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        max_depth = 3
+        score, move = minimax_search(pos, max_depth)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(3, score)
+        self.assertTrue(print_move(move, pos) in ['32-38', '23-29'])
+
+
+        text = '''
+           .   .   .   .   x 
+         .   .   .   .   x   
+           .   .   .   x   . 
+         .   .   .   .   .   
+           .   .   x   .   o 
+         .   .   .   .   .   
+           .   x   .   o   . 
+         .   .   .   .   .   
+           o   .   o   .   . 
+         .   .   .   o   .   B
+        '''
+        pos = parse_position(text)
+        display_position(pos)
+        max_depth = 3
+        score, move = minimax_search_with_shuffle(pos, max_depth)
+        print(f'score = {score}, move = {print_move(move, pos)}')
+        self.assertEqual(3, score)
+        self.assertTrue(print_move(move, pos) in ['32-38', '23-29'])
 
 
 if __name__ == '__main__':

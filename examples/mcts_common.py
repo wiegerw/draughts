@@ -7,12 +7,13 @@
 # Alternative MCTS implementation that does not use a parent attribute in the nodes.
 # Instead, a path from the root to a leaf is explicitly constructed inside the MCTS algorithm.
 
+from enum import Enum
 from draughts1 import *
 
 Move = int  # moves are stored as integers
 
 
-def init_scan():
+def init_scan(bb_size = 0):
     Scan.set("variant", "normal")
     Scan.set("book", "false")
     Scan.set("book-ply", "4")
@@ -20,7 +21,7 @@ def init_scan():
     Scan.set("ponder", "false")
     Scan.set("threads", "1")
     Scan.set("tt-size", "24")
-    Scan.set("bb-size", "0")
+    Scan.set("bb-size", f"{bb_size}")
     Scan.update()
     Scan.init()
 
@@ -28,6 +29,13 @@ def init_scan():
 class GlobalSettings(object):
     verbose = False
     debug = False
+
+
+class GameResult(Enum):
+    WIN = 1,
+    DRAW = 0,
+    LOSS = -1,
+    UNKNOWN = -2
 
 
 def find_move(u: Pos, v: Pos) -> Move:
