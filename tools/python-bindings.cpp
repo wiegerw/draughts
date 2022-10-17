@@ -540,5 +540,6 @@ PYBIND11_MODULE(draughts1, m)
   m.def("scan_search", draughts::scan_search);
   m.def("pos_to_numpy1", pos_to_numpy1, py::return_value_policy::move);
   m.def("pos_to_numpy2", pos_to_numpy2, py::return_value_policy::move);
-  m.def("minimax_search", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true>(pos, max_depth); });
+  m.def("minimax_search", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, false>(pos, max_depth); });
+  m.def("minimax_search_with_shuffle", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, true>(pos, max_depth); });
 }
