@@ -547,8 +547,31 @@ PYBIND11_MODULE(draughts1, m)
   m.def("scan_search", draughts::scan_search);
   m.def("pos_to_numpy1", pos_to_numpy1, py::return_value_policy::move);
   m.def("pos_to_numpy2", pos_to_numpy2, py::return_value_policy::move);
-  m.def("minimax_search", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, false>(pos, max_depth); });
-  m.def("minimax_search_with_shuffle", [](const Pos& pos, int max_depth) { return draughts::negamax_depth_best_move<true, true>(pos, max_depth); });
+
+  // minimax with a piece count evaluation in the leaves
+  // moves are not shuffled, causing an enormous bias into one direction
+  m.def("minimax_search", [](const Pos& pos, int max_depth)
+    { 
+      draughts::negamax<true, false, draughts::piece_count_evaluator> N;
+      return N.negamax_depth_best_move(pos, max_depth); 
+    });
+
+  // minimax with a piece count evaluation in the leaves
+  // moves are shuffled
+  m.def("minimax_search_with_shuffle", [](const Pos& pos, int max_depth) 
+    { 
+      draughts::negamax<true, true, draughts::piece_count_evaluator> N;
+      return N.negamax_depth_best_move(pos, max_depth); 
+    });
+
+  // minimax with a scan evaluation in the leaves
+  // no need to shuffle the moves
+  m.def("minimax_search_scan", [](const Pos& pos, int max_depth) 
+    { 
+      draughts::negamax<true, false, draughts::scan_evaluator> N;
+      return N.negamax_depth_best_move(pos, max_depth); 
+    });
+
   m.def("parse_pdn_game", draughts::parse_pdn_game);
   m.def("compute_position_result", draughts::compute_position_result);
 }

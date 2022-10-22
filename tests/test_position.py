@@ -675,9 +675,7 @@ class Test(unittest.TestCase):
          .   .   O   .   .   W
         '''
         pos = parse_position(text)
-        print('hierooooooo1')
         result = compute_position_result(pos)
-        print('hierooooooo2')
         self.assertEqual(GameResult.Win, result)
 
         text = '''

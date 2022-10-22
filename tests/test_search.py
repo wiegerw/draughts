@@ -22,7 +22,35 @@ class Test(unittest.TestCase):
         Scan.update()
         Scan.init()
 
-    def test_scan_search(self):
+    def check_position(self, text, max_depth, expected_moves, expected_piece_count, max_time=5.0):
+        pos = parse_position(text)
+
+        score1, m1 = minimax_search_with_shuffle(pos, max_depth)
+        score2, m2 = minimax_search_scan(pos, max_depth)
+        score3, m3 = scan_search(pos, max_depth, max_time)
+        move1 = print_move(m1, pos)
+        move2 = print_move(m2, pos)
+        move3 = print_move(m3, pos)
+        moves = [move1, move2, move3]
+        scores = [score1, score2, score3] if score3 != score_none() else [score1, score2]
+
+        # display the search results
+        print('==========================================')
+        display_position(pos)
+        print(f'moves: {moves}')
+        print(f'scores: {scores}')
+
+        # check the moves
+        self.assertTrue(move1 in expected_moves)
+        self.assertTrue(move2 in expected_moves)
+        self.assertTrue(move3 in expected_moves)
+
+        # check the scores
+        self.assertEqual(expected_piece_count, score1)
+        self.assertTrue(all(s >= 0 for s in scores) or all(s <= 0 for s in scores))
+
+
+    def test_search(self):
         text = '''
            .   .   .   .   . 
          .   .   .   x   .   
@@ -35,13 +63,10 @@ class Test(unittest.TestCase):
            .   .   .   .   . 
          O   .   .   O   O   W
         '''
-        pos = parse_position(text)
-        display_position(pos)
-        print('eval', eval_position(pos))
         max_depth = 15
-        max_time = 5.0
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
+        expected_moves = ['50x4']
+        expected_piece_count = 9
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
            .   .   .   .   . 
@@ -55,13 +80,10 @@ class Test(unittest.TestCase):
            .   .   .   .   . 
          X   .   .   X   X   B
         '''
-        pos = parse_position(text)
-        display_position(pos)
-        print('eval', eval_position(pos))
         max_depth = 15
-        max_time = 5.0
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
+        expected_moves = ['50x4']
+        expected_piece_count = 9
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
            .   .   .   .   .
@@ -75,13 +97,10 @@ class Test(unittest.TestCase):
            .   .   .   .   .
          X   .   .   .   X   B
         '''
-        pos = parse_position(text)
-        display_position(pos)
-        print('eval', eval_position(pos))
         max_depth = 15
-        max_time = 5.0
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
+        expected_moves = ['50x4']
+        expected_piece_count = 6
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
            .   .   .   O   .
@@ -95,15 +114,11 @@ class Test(unittest.TestCase):
            .   .   .   .   .
          X   .   .   .   X   B
         '''
-        pos = parse_position(text)
-        display_position(pos)
-        print('eval', eval_position(pos))
-        max_depth = 15
-        max_time = 5.0
-        score, move = scan_search(pos, max_depth, max_time)
-        print(f'score = {score}, move = {print_move(move, pos)}')
+        max_depth = 3
+        expected_moves = ['50x28', '50x17', '50x11', '50x6']
+        expected_piece_count = 3
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
-    def test_minimax_search(self):
         text = '''
            .   .   .   .   . 
          .   .   .   .   .   
@@ -116,13 +131,10 @@ class Test(unittest.TestCase):
            o   .   .   .   . 
          o   .   .   .   .   W
         '''
-        pos = parse_position(text)
-        display_position(pos)
         max_depth = 1
-        score, move = minimax_search(pos, max_depth)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(2, score)
-        self.assertEqual('37-31', print_move(move, pos))
+        expected_moves = ['37-31']
+        expected_piece_count = 2
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
            .   x   .   .   . 
@@ -136,13 +148,10 @@ class Test(unittest.TestCase):
            o   .   .   .   . 
          o   .   .   .   .   W
         '''
-        pos = parse_position(text)
-        display_position(pos)
         max_depth = 3
-        score, move = minimax_search(pos, max_depth)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(3, score)
-        self.assertTrue(print_move(move, pos) in ['19-13', '28-22'])
+        expected_moves = ['19-13', '28-22', '19-14']
+        expected_piece_count = 3
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
            .   .   .   .   x 
@@ -156,34 +165,10 @@ class Test(unittest.TestCase):
            o   .   o   .   . 
          .   .   .   o   .   B
         '''
-        pos = parse_position(text)
-        display_position(pos)
         max_depth = 3
-        score, move = minimax_search(pos, max_depth)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(3, score)
-        self.assertTrue(print_move(move, pos) in ['32-38', '23-29'])
-
-
-        text = '''
-           .   .   .   .   x 
-         .   .   .   .   x   
-           .   .   .   x   . 
-         .   .   .   .   .   
-           .   .   x   .   o 
-         .   .   .   .   .   
-           .   x   .   o   . 
-         .   .   .   .   .   
-           o   .   o   .   . 
-         .   .   .   o   .   B
-        '''
-        pos = parse_position(text)
-        display_position(pos)
-        max_depth = 3
-        score, move = minimax_search_with_shuffle(pos, max_depth)
-        print(f'score = {score}, move = {print_move(move, pos)}')
-        self.assertEqual(3, score)
-        self.assertTrue(print_move(move, pos) in ['32-38', '23-29'])
+        expected_moves = ['32-38', '23-29', '32-37']
+        expected_piece_count = 3
+        self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
 
 if __name__ == '__main__':

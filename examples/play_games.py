@@ -10,7 +10,7 @@ from typing import List
 from draughts1 import *
 import mcts
 import mcts_traps
-from mcts_common import init_scan, Move, GameResult, find_move
+from mcts_common import init_scan, Move, find_move
 
 
 def print_pdn_moves(moves: List[str]):
@@ -120,8 +120,23 @@ class ScanPlayer(Player):
         return f'Scan player depth = {self.max_depth}'
 
 
-# minimax with a piece counter
-class MinimaxPlayer(Player):
+# minimax with a piece count evaluation in the leaves
+# moves are not shuffled
+class MinimaxPlayerNoShuffle(Player):
+    def __init__(self, max_depth: int):
+        self.max_depth = max_depth
+
+    def play(self, pos: Pos) -> Move:
+        score, move = minimax_search(pos, self.max_depth)
+        return move
+
+    def name(self) -> str:
+        return f'Minimax player no shuffle depth = {self.max_depth}'
+
+
+# minimax with a piece count evaluation in the leaves
+# moves are shuffled
+class MinimaxPlayerPieceCount(Player):
     def __init__(self, max_depth: int):
         self.max_depth = max_depth
 
@@ -130,7 +145,20 @@ class MinimaxPlayer(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player depth = {self.max_depth}'
+        return f'Minimax player piece count depth = {self.max_depth}'
+
+
+# minimax with a Scan evaluation in the leaves
+class MinimaxPlayerScan(Player):
+    def __init__(self, max_depth: int):
+        self.max_depth = max_depth
+
+    def play(self, pos: Pos) -> Move:
+        score, move = minimax_search_scan(pos, self.max_depth)
+        return move
+
+    def name(self) -> str:
+        return f'Minimax player Scan depth = {self.max_depth}'
 
 
 # uses the mcts algorithm
@@ -193,14 +221,25 @@ def play_game(player1: Player, player2: Player, max_moves: int = 150) -> Game:
 def main():
     max_moves = 150
     player1 = ScanPlayer(max_depth=5)
-    player2 = MinimaxPlayer(max_depth=8)
-    player3 = MCTSPlayer(max_iterations=10000)
-    player4 = MCTSTrapsPlayer(max_iterations=10000)
+    player2 = MinimaxPlayerNoShuffle(max_depth=8)
+    player3 = MinimaxPlayerPieceCount(max_depth=7)
+    player4 = MinimaxPlayerScan(max_depth=6)
+    player5 = MCTSPlayer(max_iterations=10000)
+    player6 = MCTSTrapsPlayer(max_iterations=10000)
 
     game = play_game(player1, player2, max_moves)
     print(game.to_pdn())
     print('')
+
+    game = play_game(player2, player3, max_moves)
+    print(game.to_pdn())
+    print('')
+
     game = play_game(player3, player4, max_moves)
+    print(game.to_pdn())
+    print('')
+
+    game = play_game(player5, player6, max_moves)
     print(game.to_pdn())
 
 
