@@ -66,11 +66,11 @@ class PDNPrinter:
 
 
 class Game(object):
-    def __init__(self, white: str, black: str):
-        self.moves = []
+    def __init__(self, white: str, black: str, moves=None, result=GameResult.Unknown):
         self.white = white
         self.black = black
-        self.result = GameResult.Unknown
+        self.moves = moves if moves else []
+        self.result = result
 
     def get_moves(self):
         result = []
@@ -89,12 +89,32 @@ class Game(object):
             return '0-2'
         return '?'
 
+    def get_end_position(self):
+        pos = start_position()
+        for m in self.moves:
+            pos = pos.succ(m)
+        return pos
+
     def to_pdn(self) -> str:
         printer = PDNPrinter()
         printer.write_white(self.white)
         printer.write_black(self.black)
         printer.write_result(self.get_result())
         return printer.text + print_pdn_moves(self.get_moves())
+
+
+# Returns all games with n moves, except the ones in which one of the players loses material
+def n_move_sequences(n) -> List[List[Move]]:
+    games = [(start_position(), [])]
+
+    for i in range(n):
+        new_games = []
+        for (pos, moves) in games:
+            for move in generate_moves(pos):
+               new_games.append((pos.succ(move), moves + [move]))
+        games = new_games
+
+    return [moves for (pos, moves) in games if minimax_search_with_shuffle(pos, 4)[0] == 0]
 
 
 # base class for players
@@ -122,7 +142,7 @@ class ScanPlayer(Player):
 
 # minimax with a piece count evaluation in the leaves
 # moves are not shuffled
-class MinimaxPlayerNoShuffle(Player):
+class MinimaxPlayer(Player):
     def __init__(self, max_depth: int):
         self.max_depth = max_depth
 
@@ -136,7 +156,7 @@ class MinimaxPlayerNoShuffle(Player):
 
 # minimax with a piece count evaluation in the leaves
 # moves are shuffled
-class MinimaxPlayerPieceCount(Player):
+class MinimaxPlayerWithShuffle(Player):
     def __init__(self, max_depth: int):
         self.max_depth = max_depth
 
@@ -199,9 +219,9 @@ class MCTSTrapsPlayer(Player):
         return f'MCTS Traps max_iterations = {self.max_iterations}'
 
 
-def play_game(player1: Player, player2: Player, max_moves: int = 150) -> Game:
-    game = Game(player1.name(), player2.name())
-    pos = start_position()
+def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: int = 150) -> Game:
+    game = Game(player1.name(), player2.name(), moves[:])
+    pos = game.get_end_position()
     for i in range(max_moves):
         result = compute_position_result(pos)
         if result != GameResult.Unknown:
@@ -218,29 +238,51 @@ def play_game(player1: Player, player2: Player, max_moves: int = 150) -> Game:
     return game
 
 
+def display_match_result(games: List[Game]) -> None:
+    from collections import defaultdict
+    wins = defaultdict(lambda: 0)
+    for game in games:
+        if game.result == GameResult.Win:
+            wins[game.white] += 1
+        elif game.result == GameResult.Loss:
+            wins[game.black] += 1
+    player1, player2 = sorted(wins.keys())
+    print(f'match result: {player1} - {player2} {wins[player1]} - {wins[player2]}')
+
+
+def play_dxp_match(player1: Player, player2: Player, max_moves: int = 150) -> None:
+    games = []
+    for moves in n_move_sequences(2):
+        game = play_game(player1, player2, moves, max_moves)
+        games.append(game)
+        print(game.to_pdn())
+        print('')
+
+        game = play_game(player2, player1, moves, max_moves)
+        games.append(game)
+        print(game.to_pdn())
+        print('')
+
+    display_match_result(games)
+
+
 def main():
     max_moves = 150
-    player1 = ScanPlayer(max_depth=5)
-    player2 = MinimaxPlayerNoShuffle(max_depth=8)
-    player3 = MinimaxPlayerPieceCount(max_depth=7)
-    player4 = MinimaxPlayerScan(max_depth=6)
-    player5 = MCTSPlayer(max_iterations=10000)
-    player6 = MCTSTrapsPlayer(max_iterations=10000)
+    player1 = ScanPlayer(max_depth=6)
+    player2 = MinimaxPlayer(max_depth=7)
+    player3 = MinimaxPlayerWithShuffle(max_depth=7)
+    player4 = MinimaxPlayerScan(max_depth=7)
+    player5 = MCTSPlayer(max_iterations=1000)
+    player6 = MCTSTrapsPlayer(max_iterations=1000)
 
-    game = play_game(player1, player2, max_moves)
+    game = play_game(player5, player6, [], max_moves)
     print(game.to_pdn())
     print('')
 
-    game = play_game(player2, player3, max_moves)
-    print(game.to_pdn())
+    play_dxp_match(player2, player3)
     print('')
 
-    game = play_game(player3, player4, max_moves)
-    print(game.to_pdn())
-    print('')
-
-    game = play_game(player5, player6, max_moves)
-    print(game.to_pdn())
+    play_dxp_match(player1, player4)
 
 
 if __name__ == '__main__':
