@@ -151,7 +151,7 @@ class MinimaxPlayer(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player no shuffle depth = {self.max_depth}'
+        return f'Minimax player depth = {self.max_depth}'
 
 
 # minimax with a piece count evaluation in the leaves
@@ -165,7 +165,7 @@ class MinimaxPlayerWithShuffle(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player piece count depth = {self.max_depth}'
+        return f'Minimax player with shuffle depth = {self.max_depth}'
 
 
 # minimax with a Scan evaluation in the leaves
