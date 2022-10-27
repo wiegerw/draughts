@@ -51,3 +51,50 @@ def normalize(x: float) -> float:
         return 0
     else:
         return 0.5
+
+
+def normalize_scan(pos: Pos, score: int) -> float:
+    if not pos.is_white_to_move():
+        score = score_inf() - score
+    return (score - score_inf()) / (2 * score_inf())
+
+
+# Base class for simulation (rollout).
+# The value is normalized to the interval [0,1], and it is from the perspective of the white player.
+class Simulate(object):
+    def __call__(self, pos: Pos) -> float:
+        raise NotImplementedError
+
+
+# Piece count evaluation
+class SimulatePieceCountEval(Simulate):
+    def __call__(self, pos: Pos) -> float:
+        score = piece_count_eval(play_forced_moves(pos))
+        return normalize(score)
+
+
+# Scan evaluation
+class SimulateScanEval(Simulate):
+    def __call__(self, pos: Pos) -> float:
+        score = eval_position(pos)
+        return normalize_scan(pos, score)
+
+
+# Minimax with shuffle
+class SimulateMinimaxWithShuffle(Simulate):
+    def __init__(self, max_depth: int):
+        self.max_depth = max_depth
+
+    def __call__(self, pos: Pos) -> float:
+        score, move = minimax_search_with_shuffle(pos, self.max_depth)
+        return normalize(score)
+
+
+# Minimax with Scan evaluation
+class SimulateMinimaxScan(Simulate):
+    def __init__(self, max_depth: int):
+        self.max_depth = max_depth
+
+    def __call__(self, pos: Pos) -> float:
+        score, move = minimax_search_scan(pos, self.max_depth)
+        return normalize_scan(pos, score)

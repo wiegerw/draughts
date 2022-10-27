@@ -13,7 +13,8 @@ import math
 import io
 import random
 from typing import List
-from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, normalize
+from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, normalize, \
+    SimulatePieceCountEval
 
 
 class MCTSNode(object):
@@ -88,13 +89,7 @@ def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
     return tree.add_child(u, i)
 
 
-# use a piece count evaluation and normalize it to values in the interval [0,1]
-def simulate(u: MCTSNode) -> float:
-    value = piece_count_eval(play_forced_moves(u.state))
-    return normalize(value)
-
-
-def mcts(tree: MCTSTree, c: float, max_iterations) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountEval()) -> MCTSNode:
     for i in range(max_iterations):
         if GlobalSettings.verbose and i % 1000 == 0 and i > 0:
             print(f'i = {i}')
@@ -125,7 +120,7 @@ def mcts(tree: MCTSTree, c: float, max_iterations) -> MCTSNode:
                 print(f'no expansion possible')
 
         # simulation
-        Delta = simulate(u)
+        Delta = simulate(u.state)
 
         # backpropagation
         for v in path:
