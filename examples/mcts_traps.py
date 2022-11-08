@@ -101,7 +101,7 @@ def add_root_connection(tree: MCTSTree, path: List[MCTSNode]) -> None:
     MCTSTree.first_moves[v] = path[1]
 
 
-def mcts_traps(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountEval()) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountEval()) -> MCTSNode:
     for i in range(max_iterations):
         if GlobalSettings.verbose and i % 1000 == 0 and i > 0:
             print(f'i = {i}')
@@ -174,7 +174,7 @@ def run():
     max_iterations = 10000
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
-    u = mcts_traps(tree, c, max_iterations)
+    u = mcts(tree, c, max_iterations)
     while True:
         m = find_move(pos, u.state)
         if m:

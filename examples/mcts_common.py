@@ -71,12 +71,18 @@ class SimulatePieceCountEval(Simulate):
         score = piece_count_eval(play_forced_moves(pos))
         return normalize_piece_count_score(score)
 
+    def __str__(self):
+        return 'SimulatePieceCountEval'
+
 
 # Scan evaluation
 class SimulateScanEval(Simulate):
     def __call__(self, pos: Pos) -> float:
         score = eval_position(pos)
         return normalize_scan_score(pos, score)
+
+    def __str__(self):
+        return 'SimulateScanEval'
 
 
 # Minimax with shuffle
@@ -88,6 +94,9 @@ class SimulateMinimaxWithShuffle(Simulate):
         score, move = minimax_search_with_shuffle(pos, self.max_depth)
         return normalize_piece_count_score(score)
 
+    def __str__(self):
+        return f'SimulateMinimaxWithShuffle({self.max_depth})'
+
 
 # Minimax with Scan evaluation
 class SimulateMinimaxScan(Simulate):
@@ -97,3 +106,6 @@ class SimulateMinimaxScan(Simulate):
     def __call__(self, pos: Pos) -> float:
         score, move = minimax_search_scan(pos, self.max_depth)
         return normalize_scan_score(pos, score)
+
+    def __str__(self):
+        return f'SimulateMinimaxScan({self.max_depth})'

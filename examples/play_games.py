@@ -187,14 +187,15 @@ class MCTSPlayer(Player):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
+        self.simulate = simulate
 
     def play(self, pos: Pos) -> Move:
         tree = mcts.MCTSTree(pos)
-        u = mcts.mcts(tree, self.c, self.max_iterations)
+        u = mcts.mcts(tree, self.c, self.max_iterations, self.simulate)
         return find_move(pos, u.state)
 
     def name(self) -> str:
-        return f'MCTS max_iterations = {self.max_iterations}'
+        return f'MCTS max_iterations = {self.max_iterations} simulate = {self.simulate}'
 
 
 # uses the mcts_traps algorithm
@@ -203,10 +204,11 @@ class MCTSTrapsPlayer(Player):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
+        self.simulate = simulate
 
     def play(self, pos: Pos) -> Move:
         tree = mcts_traps.MCTSTree(pos)
-        u = mcts_traps.mcts_traps(tree, self.c, self.max_iterations)
+        u = mcts_traps.mcts(tree, self.c, self.max_iterations, self.simulate)
         while True:
             m = find_move(pos, u.state)
             if m:
@@ -216,7 +218,7 @@ class MCTSTrapsPlayer(Player):
         return m
 
     def name(self) -> str:
-        return f'MCTS Traps max_iterations = {self.max_iterations}'
+        return f'MCTS Traps max_iterations = {self.max_iterations} simulate = {self.simulate}'
 
 
 def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: int = 150) -> Game:
