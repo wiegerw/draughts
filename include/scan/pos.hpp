@@ -95,7 +95,7 @@ public:
       return bit::has(m_side[Side::Black], sq);
     }
 
-    bool is_white_to_move() const
+    constexpr bool is_white_to_move() const
     {
       return m_turn == Side::White;
     }

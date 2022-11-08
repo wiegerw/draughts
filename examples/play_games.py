@@ -10,7 +10,7 @@ from typing import List
 from draughts1 import *
 import mcts
 import mcts_traps
-from mcts_common import init_scan, Move, find_move
+from mcts_common import init_scan, Move, find_move, SimulateMinimaxWithShuffle, Simulate, SimulatePieceCountEval
 
 
 def print_pdn_moves(moves: List[str]):
@@ -183,7 +183,7 @@ class MinimaxPlayerScan(Player):
 
 # uses the mcts algorithm
 class MCTSPlayer(Player):
-    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2)):
+    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountEval()):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
@@ -199,7 +199,7 @@ class MCTSPlayer(Player):
 
 # uses the mcts_traps algorithm
 class MCTSTrapsPlayer(Player):
-    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2)):
+    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountEval()):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
@@ -239,8 +239,9 @@ def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: in
 
 
 def display_match_result(games: List[Game]) -> None:
-    from collections import defaultdict
-    wins = defaultdict(lambda: 0)
+    wins = {}
+    wins[games[0].white] = 0
+    wins[games[0].black] = 0
     for game in games:
         if game.result == GameResult.Win:
             wins[game.white] += 1
@@ -274,8 +275,13 @@ def main():
     player4 = MinimaxPlayerScan(max_depth=7)
     player5 = MCTSPlayer(max_iterations=1000)
     player6 = MCTSTrapsPlayer(max_iterations=1000)
+    player7 = MCTSPlayer(max_iterations=1000, simulate=SimulateMinimaxWithShuffle(5))
 
     game = play_game(player5, player6, [], max_moves)
+    print(game.to_pdn())
+    print('')
+
+    game = play_game(player5, player7, [], max_moves)
     print(game.to_pdn())
     print('')
 

@@ -435,23 +435,29 @@ double naive_rollout(const Pos& pos)
   return normalize_eval(piece_count_eval(play_forced_moves(pos)));
 }
 
-// Returns the score from the perspective of the player to move
+// Returns the score from the perspective of the white player
 struct piece_count_evaluator
 {
   Score operator()(const Pos& u) const
   {
-    return u.is_white_to_move() ? piece_count_eval(u) : -piece_count_eval(u);
+    return piece_count_eval(u);
   }
 };
 
-// Returns the score from the perspective of the player to move
+// Returns the score from the perspective of the white player
 struct scan_evaluator
 {
   Score operator()(const Pos& u) const
   {
-    return eval(u);
+    return u.is_white_to_move() ? eval(u) : -eval(u);
   }
 };
+
+inline
+constexpr int color(const Pos& pos)
+{
+  return pos.is_white_to_move() ? 1 : -1;
+}
 
 template <bool PlayForcedMoves = false, bool ShuffleMoves = false, typename Eval=piece_count_evaluator>
 struct negamax
@@ -480,7 +486,7 @@ struct negamax
     }
     if (depth == 0 || moves.size() == 0)
     {
-      return Eval()(u);
+      return color(u) * Eval()(u);
     }
     Score score = -score::Inf;
     for (Move m: moves)
@@ -514,7 +520,7 @@ struct negamax
     }
     if (depth == 0 || moves.size() == 0)
     {
-      return { Eval()(u), move::None };
+      return { color(u) * Eval()(u), move::None };
     }
     Score best_score = -score::Inf;
     Move best_move;
@@ -534,6 +540,12 @@ struct negamax
       }
     }
     return { best_score, best_move };
+  }
+
+  std::pair<Score, Move> minimax_best_move(const Pos& u, unsigned int depth, int alpha = -score::Inf, int beta = score::Inf)
+  {
+    auto [best_score, best_move] = negamax_depth_best_move(u, depth, alpha, beta);
+    return {color(u) * best_score, best_move};
   }
 };
 

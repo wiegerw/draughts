@@ -7,7 +7,6 @@
 # Alternative MCTS implementation that does not use a parent attribute in the nodes.
 # Instead, a path from the root to a leaf is explicitly constructed inside the MCTS algorithm.
 
-from enum import Enum
 from draughts1 import *
 
 Move = int  # moves are stored as integers
@@ -44,18 +43,18 @@ def print_move_between_positions(src: Pos, dest: Pos) -> str:
     return print_move(m, src) if m else f'jump({print_position(dest, False, True)})'
 
 
-def normalize(x: float) -> float:
-    if x > 0:
+def normalize_piece_count_score(score: int) -> float:
+    if score > 0:
         return 1
-    elif x < 0:
+    elif score < 0:
         return 0
     else:
         return 0.5
 
 
-def normalize_scan(pos: Pos, score: int) -> float:
+def normalize_scan_score(pos: Pos, score: int) -> float:
     if not pos.is_white_to_move():
-        score = score_inf() - score
+        score = -score
     return (score - score_inf()) / (2 * score_inf())
 
 
@@ -70,14 +69,14 @@ class Simulate(object):
 class SimulatePieceCountEval(Simulate):
     def __call__(self, pos: Pos) -> float:
         score = piece_count_eval(play_forced_moves(pos))
-        return normalize(score)
+        return normalize_piece_count_score(score)
 
 
 # Scan evaluation
 class SimulateScanEval(Simulate):
     def __call__(self, pos: Pos) -> float:
         score = eval_position(pos)
-        return normalize_scan(pos, score)
+        return normalize_scan_score(pos, score)
 
 
 # Minimax with shuffle
@@ -87,7 +86,7 @@ class SimulateMinimaxWithShuffle(Simulate):
 
     def __call__(self, pos: Pos) -> float:
         score, move = minimax_search_with_shuffle(pos, self.max_depth)
-        return normalize(score)
+        return normalize_piece_count_score(score)
 
 
 # Minimax with Scan evaluation
@@ -97,4 +96,4 @@ class SimulateMinimaxScan(Simulate):
 
     def __call__(self, pos: Pos) -> float:
         score, move = minimax_search_scan(pos, self.max_depth)
-        return normalize_scan(pos, score)
+        return normalize_scan_score(pos, score)

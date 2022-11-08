@@ -12,8 +12,7 @@ import math
 import io
 import random
 from typing import List
-from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, normalize, \
-    SimulatePieceCountEval
+from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, SimulatePieceCountEval
 
 
 class MCTSNode(object):

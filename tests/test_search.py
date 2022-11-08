@@ -28,6 +28,8 @@ class Test(unittest.TestCase):
         score1, m1 = minimax_search_with_shuffle(pos, max_depth)
         score2, m2 = minimax_search_scan(pos, max_depth)
         score3, m3 = scan_search(pos, max_depth, max_time)
+        if not pos.is_white_to_move() and score3 != score_none():
+            score3 = -score3
         move1 = print_move(m1, pos)
         move2 = print_move(m2, pos)
         move3 = print_move(m3, pos)
@@ -82,7 +84,7 @@ class Test(unittest.TestCase):
         '''
         max_depth = 15
         expected_moves = ['50x4']
-        expected_piece_count = 9
+        expected_piece_count = -9
         self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
@@ -99,7 +101,7 @@ class Test(unittest.TestCase):
         '''
         max_depth = 15
         expected_moves = ['50x4']
-        expected_piece_count = 6
+        expected_piece_count = -6
         self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
@@ -116,7 +118,7 @@ class Test(unittest.TestCase):
         '''
         max_depth = 3
         expected_moves = ['50x28', '50x17', '50x11', '50x6']
-        expected_piece_count = 3
+        expected_piece_count = -3
         self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
         text = '''
@@ -167,7 +169,7 @@ class Test(unittest.TestCase):
         '''
         max_depth = 3
         expected_moves = ['32-38', '23-29', '32-37']
-        expected_piece_count = 3
+        expected_piece_count = -3
         self.check_position(text, max_depth, expected_moves, expected_piece_count)
 
 
