@@ -5,7 +5,8 @@
 #  https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import math
-from typing import List
+from pathlib import Path
+from typing import List, Dict
 
 from draughts1 import *
 import mcts
@@ -65,6 +66,16 @@ class PDNPrinter:
         self.text = self.text + print_pdn_moves(moves)
 
 
+def game_result_string(result: GameResult) -> str:
+    if result == GameResult.Win:
+        return '2-0'
+    elif result == GameResult.Draw:
+        return '1-1'
+    elif result == GameResult.Loss:
+        return '0-2'
+    return '?'
+
+
 class Game(object):
     def __init__(self, white: str, black: str, moves=None, result=GameResult.Unknown):
         self.white = white
@@ -80,15 +91,6 @@ class Game(object):
             pos = pos.succ(m)
         return result
 
-    def get_result(self):
-        if self.result == GameResult.Win:
-            return '2-0'
-        elif self.result == GameResult.Draw:
-            return '1-1'
-        elif self.result == GameResult.Loss:
-            return '0-2'
-        return '?'
-
     def get_end_position(self):
         pos = start_position()
         for m in self.moves:
@@ -99,7 +101,7 @@ class Game(object):
         printer = PDNPrinter()
         printer.write_white(self.white)
         printer.write_black(self.black)
-        printer.write_result(self.get_result())
+        printer.write_result(game_result_string(self.result))
         return printer.text + print_pdn_moves(self.get_moves())
 
 
@@ -137,7 +139,7 @@ class ScanPlayer(Player):
         return move
 
     def name(self) -> str:
-        return f'Scan player depth = {self.max_depth}'
+        return f'ScanPlayer(depth={self.max_depth})'
 
 
 # minimax with a piece count evaluation in the leaves
@@ -151,7 +153,7 @@ class MinimaxPlayer(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player depth = {self.max_depth}'
+        return f'MinimaxPlayer(depth={self.max_depth})'
 
 
 # minimax with a piece count evaluation in the leaves
@@ -165,7 +167,7 @@ class MinimaxPlayerWithShuffle(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player with shuffle depth = {self.max_depth}'
+        return f'MinimaxPlayerWithShuffle(depth={self.max_depth})'
 
 
 # minimax with a Scan evaluation in the leaves
@@ -178,7 +180,7 @@ class MinimaxPlayerScan(Player):
         return move
 
     def name(self) -> str:
-        return f'Minimax player Scan depth = {self.max_depth}'
+        return f'MinimaxPlayerScan(depth={self.max_depth})'
 
 
 # uses the mcts algorithm
@@ -195,7 +197,7 @@ class MCTSPlayer(Player):
         return find_move(pos, u.state)
 
     def name(self) -> str:
-        return f'MCTS max_iterations = {self.max_iterations} simulate = {self.simulate}'
+        return f'MCTSPlayer(max_iterations={self.max_iterations},simulate={self.simulate})'
 
 
 # uses the mcts_traps algorithm
@@ -218,10 +220,10 @@ class MCTSTrapsPlayer(Player):
         return m
 
     def name(self) -> str:
-        return f'MCTS Traps max_iterations = {self.max_iterations} simulate = {self.simulate}'
+        return f'MCTSTrapsPlayer(max_iterations={self.max_iterations},simulate={self.simulate})'
 
 
-def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: int = 150) -> Game:
+def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: int = 150, verbose=False) -> Game:
     game = Game(player1.name(), player2.name(), moves[:])
     pos = game.get_end_position()
     for i in range(max_moves):
@@ -237,10 +239,13 @@ def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: in
     if game.result == GameResult.Unknown:
         game.result = compute_position_result(pos)
 
+    if verbose:
+        print(f'{game.white} - {game.black} {game_result_string(game.result)}')
+
     return game
 
 
-def display_match_result(games: List[Game]) -> None:
+def match_result(games: List[Game]) -> Dict:
     wins = {}
     wins[games[0].white] = 0
     wins[games[0].black] = 0
@@ -249,49 +254,64 @@ def display_match_result(games: List[Game]) -> None:
             wins[game.white] += 1
         elif game.result == GameResult.Loss:
             wins[game.black] += 1
+    return wins
+
+
+def display_match_result(games: List[Game]) -> None:
+    wins = match_result(games)
     player1, player2 = sorted(wins.keys())
-    print(f'match result: {player1} - {player2} {wins[player1]} - {wins[player2]}')
+    print(f'match result: {player1} - {player2}   {wins[player1]} - {wins[player2]}\n')
 
 
-def play_dxp_match(player1: Player, player2: Player, max_moves: int = 150) -> None:
+def play_dxp_match(player1: Player, player2: Player, max_moves: int = 150, verbose=False) -> List[Game]:
     games = []
     for moves in n_move_sequences(2):
-        game = play_game(player1, player2, moves, max_moves)
+        game = play_game(player1, player2, moves, max_moves, verbose)
         games.append(game)
-        print(game.to_pdn())
-        print('')
 
-        game = play_game(player2, player1, moves, max_moves)
+        game = play_game(player2, player1, moves, max_moves, verbose)
         games.append(game)
-        print(game.to_pdn())
-        print('')
 
     display_match_result(games)
+    return games
+
+
+def save_games(filename: str, games: List[Game]) -> None:
+    text = '\n\n'.join(game.to_pdn() for game in games)
+    Path(filename).write_text(text)
+
+
+# Plays DXP matches against a minimax player with increasing depth, until the minimax player wins.
+# The games are saved in PDN format.
+def determine_player_strength(player: Player) -> None:
+    for depth in range(1, 12):
+        opponent = MinimaxPlayerWithShuffle(max_depth=depth)
+        games = play_dxp_match(player, opponent)
+        filename = f'DXP match {player.name()} - {opponent.name()}.pdn'
+        save_games(filename, games)
+        wins = match_result(games)
+        if wins[opponent.name()] > wins[player.name()]:
+            break
 
 
 def main():
-    max_moves = 150
-    player1 = ScanPlayer(max_depth=6)
-    player2 = MinimaxPlayer(max_depth=7)
-    player3 = MinimaxPlayerWithShuffle(max_depth=7)
-    player4 = MinimaxPlayerScan(max_depth=7)
-    player5 = MCTSPlayer(max_iterations=1000)
-    player6 = MCTSTrapsPlayer(max_iterations=1000)
-    player7 = MCTSPlayer(max_iterations=1000, simulate=SimulateMinimaxWithShuffle(5))
+    player1 = ScanPlayer(max_depth=5)
+    player2 = MinimaxPlayer(max_depth=6)
+    player3 = MinimaxPlayerWithShuffle(max_depth=6)
+    player4 = MinimaxPlayerScan(max_depth=6)
+    player5 = MCTSPlayer(max_iterations=500)
+    player6 = MCTSTrapsPlayer(max_iterations=500)
+    player7 = MCTSPlayer(max_iterations=500, simulate=SimulateMinimaxWithShuffle(4))
 
-    game = play_game(player5, player6, [], max_moves)
-    print(game.to_pdn())
-    print('')
+    game = play_game(player5, player6, [], max_moves=150)
+    print(game.to_pdn(), '\n')
 
-    game = play_game(player5, player7, [], max_moves)
-    print(game.to_pdn())
-    print('')
+    game = play_game(player5, player7, [], max_moves=150)
+    print(game.to_pdn(), '\n')
 
-    play_dxp_match(player2, player3)
-    print('')
-
-    play_dxp_match(player1, player4)
-
+    play_dxp_match(player2, player3, verbose=True)
+    play_dxp_match(player1, player4, verbose=True)
+    determine_player_strength(MinimaxPlayerScan(max_depth=2))
 
 if __name__ == '__main__':
     init_scan(bb_size=6)
