@@ -4,22 +4,40 @@
 #  Software License, (See accompanying file license.txt or copy at
 #  https://www.gnu.org/licenses/gpl-3.0.txt)
 
+import math
 import unittest
 from draughts1 import *
 
 
-def normalize_piece_count(pos: Pos, score: int) -> float:
-    if score == 0:
+# Normalize the value to 0 (black wins), 0.5 (draw), 1.0 (white wins)
+def normalize_piece_count_discrete(pos: Pos, score: int) -> float:
+    if score > 0:
+        return 1
+    elif score < 0:
+        return 0
+    else:
         return 0.5
-    return 0 if score < 0 else 1
 
 
-def normalize_scan(pos: Pos, score: int) -> float:
+# Normalize the value to 0 (black wins), 0.5 (draw), 1.0 (white wins)
+def normalize_scan_discrete(pos: Pos, score: int) -> float:
     if abs(score) < 50:
         return 0.5
     if not pos.is_white_to_move():
         score = -score
     return 0 if score < 0 else 1
+
+
+# Normalize the value to the interval [0,1].
+def normalize_piece_count_continuous(score: int) -> float:
+    return math.tanh(score / 5) / 2 + 0.5
+
+
+# Normalize the value to the interval [0,1].
+def normalize_scan_continuous(pos: Pos, score: int) -> float:
+    if not pos.is_white_to_move():
+        score = -score
+    return math.tanh(score / 100) / 2 + 0.5
 
 
 # Base class for simulation (rollout).
@@ -33,14 +51,14 @@ class Simulate(object):
 class SimulatePieceCountEval(Simulate):
     def __call__(self, pos: Pos) -> float:
         score = piece_count_eval(play_forced_moves(pos))
-        return normalize_piece_count(pos, score)
+        return normalize_piece_count_discrete(pos, score)
 
 
 # Scan evaluation
 class SimulateScanEval(Simulate):
     def __call__(self, pos: Pos) -> float:
         score = eval_position(pos)
-        return normalize_scan(pos, score)
+        return normalize_scan_discrete(pos, score)
 
 
 # Minimax with shuffle
@@ -50,7 +68,7 @@ class SimulateMinimaxWithShuffle(Simulate):
 
     def __call__(self, pos: Pos) -> float:
         score, move = minimax_search_with_shuffle(pos, self.max_depth)
-        return normalize_piece_count(pos, score)
+        return normalize_piece_count_discrete(pos, score)
 
 
 # Minimax with Scan evaluation
@@ -60,7 +78,7 @@ class SimulateMinimaxScan(Simulate):
 
     def __call__(self, pos: Pos) -> float:
         score, move = minimax_search_scan(pos, self.max_depth)
-        return normalize_scan(pos, score)
+        return normalize_scan_discrete(pos, score)
 
 
 class Test(unittest.TestCase):

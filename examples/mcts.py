@@ -13,7 +13,7 @@ import math
 import io
 import random
 from typing import List
-from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, SimulatePieceCountEval
+from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, SimulatePieceCountDiscrete
 
 
 class MCTSNode(object):
@@ -88,7 +88,7 @@ def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
     return tree.add_child(u, i)
 
 
-def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountEval()) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountDiscrete()) -> MCTSNode:
     for i in range(max_iterations):
         if GlobalSettings.verbose and i % 1000 == 0 and i > 0:
             print(f'i = {i}')

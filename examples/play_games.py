@@ -11,7 +11,7 @@ from typing import List, Dict
 from draughts1 import *
 import mcts
 import mcts_traps
-from mcts_common import init_scan, Move, find_move, SimulateMinimaxWithShuffle, Simulate, SimulatePieceCountEval
+from mcts_common import init_scan, Move, find_move, SimulateMinimaxWithShuffle, Simulate, SimulatePieceCountDiscrete
 
 
 def print_pdn_moves(moves: List[str]):
@@ -185,7 +185,7 @@ class MinimaxPlayerScan(Player):
 
 # uses the mcts algorithm
 class MCTSPlayer(Player):
-    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountEval()):
+    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountDiscrete()):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
@@ -202,7 +202,7 @@ class MCTSPlayer(Player):
 
 # uses the mcts_traps algorithm
 class MCTSTrapsPlayer(Player):
-    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountEval()):
+    def __init__(self, max_iterations: int, max_time: float = 3600, c: float = 1.0 / math.sqrt(2), simulate: Simulate=SimulatePieceCountDiscrete()):
         self.max_iterations = max_iterations
         self.max_time = max_time
         self.c = c
@@ -312,6 +312,7 @@ def main():
     play_dxp_match(player2, player3, verbose=True)
     play_dxp_match(player1, player4, verbose=True)
     determine_player_strength(MinimaxPlayerScan(max_depth=2))
+
 
 if __name__ == '__main__':
     init_scan(bb_size=6)
