@@ -9,9 +9,9 @@
 from draughts1 import *
 
 import math
-import io
 import random
-from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, SimulatePieceCountDiscrete
+from mcts_common import init_scan, GlobalSettings, find_move, print_move_between_positions, SimulatePieceCountDiscrete, \
+    best_child, log_uct_scores
 
 
 class MCTSNode(object):
@@ -47,46 +47,15 @@ class MCTSTree(object):
 
 
 def print_path(v: MCTSNode) -> str:
+    import mcts_common
+
     # construct the path from the root to v
     path = [v]
     while v.parent:
         v = v.parent
         path = [v] + path
 
-    out = io.StringIO()
-    for i in range(len(path) - 1):
-        u = path[i]
-        v = path[i + 1]
-        out.write(print_move_between_positions(u.state, v.state) + ' ')
-    return out.getvalue()
-
-
-def opponent_score(u: MCTSNode) -> float:
-    return u.N - u.Q if u.state.is_white_to_move() else u.Q
-
-
-def uct(u: MCTSNode, v: MCTSNode, c: float = 0):
-    return opponent_score(v) / v.N + c * math.sqrt(2 * math.log(u.N) / v.N)
-
-
-def best_child(u: MCTSNode, c: float) -> MCTSNode:
-    assert u.children
-
-    def key(i: int) -> float:
-        v = u.children[i]
-        return uct(u, v, c)
-
-    i = max(range(len(u.children)), key=key)
-    return u.children[i]
-
-
-# print the uct scores of the root of the tree
-def log_uct_scores(tree: MCTSTree, c: float) -> None:
-    print('uct scores')
-    u = tree.root()
-    for v in u.children:
-        print(f'{print_move_between_positions(u.state, v.state)} uct = {uct(u, v, c):.4f} N = {v.N}')
-    print('')
+    return mcts_common.print_path(path)
 
 
 def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:

@@ -8,6 +8,7 @@
 # Instead, a path from the root to a leaf is explicitly constructed inside the MCTS algorithm.
 
 import math
+import io
 from typing import Dict, Tuple, List, Any, Set
 import graphviz
 from draughts1 import *
@@ -31,6 +32,43 @@ def init_scan(bb_size = 0):
 class GlobalSettings(object):
     verbose = False
     debug = False
+
+
+def print_path(path: List[Any]) -> str:
+    out = io.StringIO()
+    for i in range(len(path) - 1):
+        u = path[i]
+        v = path[i + 1]
+        out.write(print_move_between_positions(u.state, v.state) + ' ')
+    return out.getvalue()
+
+
+def opponent_score(u) -> float:
+    return u.N - u.Q if u.state.is_white_to_move() else u.Q
+
+
+def uct(u, v, c: float = 0):
+    return opponent_score(v) / v.N + c * math.sqrt(2 * math.log(u.N) / v.N)
+
+
+def best_child(u, c: float):
+    assert u.children
+
+    def key(i: int) -> float:
+        v = u.children[i]
+        return uct(u, v, c)
+
+    i = max(range(len(u.children)), key=key)
+    return u.children[i]
+
+
+# print the uct scores of the root of the tree
+def log_uct_scores(tree, c: float) -> None:
+    print('uct scores')
+    u = tree.root()
+    for v in u.children:
+        print(f'{print_move_between_positions(u.state, v.state)} uct(c) = {uct(u, v, c):.4f} uct(0) = {uct(u, v, 0):.4f} N = {v.N}')
+    print('')
 
 
 def find_move(u: Pos, v: Pos) -> Move:
