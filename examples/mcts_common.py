@@ -63,11 +63,11 @@ def best_child(u, c: float):
 
 
 # print the uct scores of the root of the tree
-def log_uct_scores(tree, c: float) -> None:
+def log_uct_scores(tree, c: float = 0) -> None:
     print('uct scores')
     u = tree.root()
     for v in u.children:
-        print(f'{print_move_between_positions(u.state, v.state)} uct(c) = {uct(u, v, c):.4f} uct(0) = {uct(u, v, 0):.4f} N = {v.N}')
+        print(f'{print_move_between_positions(u.state, v.state):>5s}  uct({c}) = {uct(u, v, c):.4f}  N = {v.N:5d}  Q = {v.Q:5.3f}')
     print('')
 
 

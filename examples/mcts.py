@@ -11,8 +11,8 @@ from draughts1 import *
 
 import math
 import random
-from mcts_common import init_scan, GlobalSettings, find_move, SimulatePieceCountDiscrete, \
-    best_child, print_path, log_uct_scores
+from mcts_common import init_scan, GlobalSettings, find_move, best_child, print_path, log_uct_scores, \
+    Simulate, SimulatePieceCountDiscrete
 
 
 class MCTSNode(object):
@@ -50,7 +50,7 @@ def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
     return tree.add_child(u, i)
 
 
-def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountDiscrete()) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = SimulatePieceCountDiscrete()) -> MCTSNode:
     for i in range(max_iterations):
         if GlobalSettings.verbose and i % 1000 == 0 and i > 0:
             print(f'i = {i}')
