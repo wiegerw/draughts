@@ -15,6 +15,7 @@
 #include "scan/bb_base.hpp"
 #include "scan/bb_index.hpp"
 #include "scan/bit.hpp"
+#include "scan/eval.hpp"
 #include "scan/gen.hpp"
 #include "scan/list.hpp"
 #include "scan/pos.hpp"

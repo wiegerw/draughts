@@ -78,7 +78,7 @@ def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountDi
                 print(f'path {print_path(path)}')
         else:
             if GlobalSettings.debug:
-                print(f'no expansion possible')
+                print(f'path {print_path(path)} (no expansion possible)')
 
         # simulation
         Delta = simulate(u.state)
