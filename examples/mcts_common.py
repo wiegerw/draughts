@@ -34,6 +34,21 @@ class GlobalSettings(object):
     debug = False
 
 
+class StopWatch(object):
+    def __init__(self):
+        import time
+        self.start = time.perf_counter()
+
+    def seconds(self):
+        import time
+        end = time.perf_counter()
+        return end - self.start
+
+    def reset(self):
+        import time
+        self.start = time.perf_counter()
+
+
 def print_path(path: List[Any]) -> str:
     out = io.StringIO()
     for i in range(len(path) - 1):

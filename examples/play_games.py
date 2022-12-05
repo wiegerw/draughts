@@ -11,7 +11,8 @@ from typing import List, Dict
 from draughts1 import *
 import mcts
 import mcts_traps
-from mcts_common import init_scan, Move, find_move, SimulateMinimaxWithShuffle, Simulate, SimulatePieceCountDiscrete
+from mcts_common import init_scan, Move, find_move, SimulateMinimaxWithShuffle, Simulate, SimulatePieceCountDiscrete, \
+    StopWatch
 
 
 def print_pdn_moves(moves: List[str]):
@@ -224,6 +225,7 @@ class MCTSTrapsPlayer(Player):
 
 
 def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: int = 150, verbose=False) -> Game:
+    watch = StopWatch()
     game = Game(player1.name(), player2.name(), moves[:])
     pos = game.get_end_position()
     for i in range(max_moves):
@@ -240,7 +242,7 @@ def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: in
         game.result = compute_position_result(pos)
 
     if verbose:
-        print(f'{game.white} - {game.black} {game_result_string(game.result)}')
+        print(f'{game.white} - {game.black} {game_result_string(game.result):^3s}  time = {watch.seconds():5.3}s')
 
     return game
 
