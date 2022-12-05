@@ -9,7 +9,7 @@
 #
 # Three changes are applied with respect to mcts_edge1.py:
 # 1) use scores -1, 0 and 1 instead of 0, 0.5 and 1
-# 2) divide by 1 + v.N
+# 2) make the UCT formula configurable (currently there are two choices: uct1 and uct2)
 # 3) do not use the special value 999 in nodes v with v.N = 0
 
 from draughts1 import *
@@ -57,14 +57,18 @@ def opponent_score(u) -> float:
     return -u.Q if u.state.is_white_to_move() else u.Q
 
 
-def uct(u, v, c: float = 0):
+def uct1(u, v, c: float = 0):
     if v.N == 0:
         return c * math.sqrt(2 * math.log(u.N + 1))
     else:
         return opponent_score(v) / v.N + c * math.sqrt(2 * math.log(u.N + 1) / (1 + v.N))
 
 
-def best_child(u, c: float):
+def uct2(u, v, c: float = 0):
+    return opponent_score(v) / v.N + c * math.sqrt(u.N) / (1 + v.N)
+
+
+def best_child(u, c: float, uct):
     assert u.children
 
     def key(i: int) -> float:
@@ -75,7 +79,7 @@ def best_child(u, c: float):
     return u.children[i]
 
 
-def log_uct_scores(tree, c: float = 0) -> None:
+def log_uct_scores(tree, c: float, uct) -> None:
     print('uct scores')
     u = tree.root()
     for v in u.children:
@@ -103,7 +107,7 @@ class SimulatePieceCountEdge(Simulate):
         return 'SimulatePieceCountEdge'
 
 
-def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = SimulatePieceCountEdge()) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = SimulatePieceCountEdge(), uct=uct1) -> MCTSNode:
     tree.root().add_children()
 
     for i in range(max_iterations):
@@ -116,7 +120,7 @@ def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = Simulate
         # selection of a leaf node
         while u.moves:
             if u.is_fully_expanded():
-                u = best_child(u, c)
+                u = best_child(u, c, uct)
                 path.append(u)
             else:
                 break
@@ -146,9 +150,9 @@ def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = Simulate
             v.N += 1
 
         if GlobalSettings.debug:
-            log_uct_scores(tree, c)
+            log_uct_scores(tree, c, uct)
 
-    return best_child(tree.root(), 0)
+    return best_child(tree.root(), 0, uct)
 
 
 def run():
@@ -172,7 +176,7 @@ def run():
     max_iterations = 3
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
-    u = mcts(tree, c, max_iterations)
+    u = mcts(tree, c, max_iterations, uct=uct1)
     m = find_move(pos, u.state)
     print(f'best move: {print_move(m, pos)}')
 
