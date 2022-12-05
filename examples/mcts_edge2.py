@@ -16,8 +16,7 @@ from draughts1 import *
 
 import math
 import random
-from mcts_common import init_scan, GlobalSettings, find_move, best_child, print_path, log_uct_scores, \
-    Simulate, SimulatePieceCountDiscrete, print_move_between_positions, opponent_score
+from mcts_common import init_scan, GlobalSettings, find_move, print_path, Simulate, print_move_between_positions
 
 
 class MCTSNode(object):
@@ -36,6 +35,9 @@ class MCTSNode(object):
             for move in self.moves:
                 self.children.append(MCTSNode(self.state.succ(move)))
 
+    def __str__(self):
+        return f'(N = {self.N}, Q = {self.Q})'
+
 
 class MCTSTree(object):
     def __init__(self, state: Pos):
@@ -51,8 +53,15 @@ def expand(tree: MCTSTree, u: MCTSNode) -> MCTSNode:
     return random.choice(V)
 
 
+def opponent_score(u) -> float:
+    return -u.Q if u.state.is_white_to_move() else u.Q
+
+
 def uct(u, v, c: float = 0):
-    return opponent_score(v) / (1 + v.N) + c * math.sqrt(2 * math.log(u.N) / (1 + v.N))
+    if v.N == 0:
+        return c * math.sqrt(2 * math.log(u.N + 1))
+    else:
+        return opponent_score(v) / v.N + c * math.sqrt(2 * math.log(u.N + 1) / (1 + v.N))
 
 
 def best_child(u, c: float):
@@ -94,7 +103,7 @@ class SimulatePieceCountEdge(Simulate):
         return 'SimulatePieceCountEdge'
 
 
-def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = SimulatePieceCountDiscrete()) -> MCTSNode:
+def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = SimulatePieceCountEdge()) -> MCTSNode:
     tree.root().add_children()
 
     for i in range(max_iterations):
@@ -160,7 +169,7 @@ def run():
 
     GlobalSettings.verbose = True
     GlobalSettings.debug = True
-    max_iterations = 10000
+    max_iterations = 3
     tree = MCTSTree(pos)
     c = 1.0 / math.sqrt(2)
     u = mcts(tree, c, max_iterations)
