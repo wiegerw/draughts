@@ -242,7 +242,7 @@ def play_game(player1: Player, player2: Player, moves: List[Move], max_moves: in
         game.result = compute_position_result(pos)
 
     if verbose:
-        print(f'{game.white} - {game.black} {game_result_string(game.result):^3s}  time = {watch.seconds():5.3}s')
+        print(f'{game.white} - {game.black} {game_result_string(game.result):^3s}  time = {watch.seconds():6.4}s')
 
     return game
 

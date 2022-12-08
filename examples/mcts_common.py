@@ -196,8 +196,13 @@ class SimulateMinimaxScan(Simulate):
         self.max_depth = max_depth
 
     def __call__(self, pos: Pos) -> float:
+        def normalize(score: int) -> float:  # N.B. minimax_search_scan already flips scores for black
+            if abs(score) < 50:
+                return 0.5
+            return 0 if score < 0 else 1
+
         score, move = minimax_search_scan(pos, self.max_depth)
-        return normalize_scan_discrete(pos, score)
+        return normalize(score)
 
     def __str__(self):
         return f'SimulateMinimaxScan({self.max_depth})'
