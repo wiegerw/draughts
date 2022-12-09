@@ -283,11 +283,20 @@ def save_games(filename: str, games: List[Game]) -> None:
     Path(filename).write_text(text)
 
 
-# Plays DXP matches against a minimax player with increasing depth, until the minimax player wins.
-# The games are saved in PDN format.
-def determine_player_strength(player: Player, start_depth=1, verbose=False) -> None:
+def determine_player_strength(player: Player,
+                              start_depth=1,
+                              verbose=False,
+                              Opponent=MinimaxPlayerWithShuffle) -> None:
+    """Determines the strength of a player. It plays DXP matches against a minimax player with increasing depth,
+    until the minimax player wins. The games are saved in PDN format.
+
+    :param player: The player that is being tested
+    :param start_depth: The minimax depth used in the first DXP match
+    :param verbose: If true the results of the games are displayed
+    :param Opponent: The opponent that is used to measure the strength (`MinimaxPlayerWithShuffle` or `MinimaxPlayerScan`)
+    """
     for depth in range(start_depth, 12):
-        opponent = MinimaxPlayerWithShuffle(max_depth=depth)
+        opponent = Opponent(max_depth=depth)
         games = play_dxp_match(player, opponent, verbose=verbose)
         filename = f'DXP match {player.name()} - {opponent.name()}.pdn'
         save_games(filename, games)
