@@ -80,8 +80,10 @@ def mcts(tree: MCTSTree, c: float, max_iterations, simulate=SimulatePieceCountDi
         # expansion of the tree
         if u.moves:
             u = expand(tree, u)
-            while len(u.moves) == 1:
-                u = tree.add_child(u, 0)
+
+            if GlobalSettings.play_forced_moves:
+                while len(u.moves) == 1:
+                    u = tree.add_child(u, 0)
 
             if GlobalSettings.debug:
                 print(f'path {print_path(u)}')

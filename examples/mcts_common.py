@@ -32,6 +32,7 @@ def init_scan(bb_size = 0):
 class GlobalSettings(object):
     verbose = False
     debug = False
+    play_forced_moves = True
 
 
 class StopWatch(object):

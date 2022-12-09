@@ -70,9 +70,11 @@ def mcts(tree: MCTSTree, c: float, max_iterations, simulate: Simulate = Simulate
         if u.moves:
             u = expand(tree, u)
             path.append(u)
-            while len(u.moves) == 1:
-                u = tree.add_child(u, 0)
-                path.append(u)
+
+            if GlobalSettings.play_forced_moves:
+                while len(u.moves) == 1:
+                    u = tree.add_child(u, 0)
+                    path.append(u)
 
             if GlobalSettings.debug:
                 print(f'path {print_path(path)}')
