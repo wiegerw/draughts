@@ -7,7 +7,7 @@
 # Program to count the number of possible piece captures of a given depth
 
 import itertools
-from typing import Tuple
+from typing import List, Tuple
 
 
 class GlobalSettings:
@@ -31,7 +31,7 @@ def count_piece_captures(depth: int) -> int:
     def is_valid_square(row, col):
         return (0 <= row < 10) and (0 <= col < 10) and (row + col) % 2 == 0
 
-    def has_duplicate_edges(nodes: Tuple[Tuple[int, int]]) -> bool:
+    def has_duplicate_edges(nodes: List[Tuple[int, int]]) -> bool:
         edges = set([])
         for i in range(len(nodes) - 1):
             edges.add((nodes[i], nodes[i+1]))
@@ -40,12 +40,14 @@ def count_piece_captures(depth: int) -> int:
     def is_valid_capture(row: int, col: int, capture: Tuple[Tuple[int, int]]) -> bool:
         if not is_valid_square(row, col):
             return False
+        nodes = [(row, col)]
         for (dr, dc) in capture:
             row += dr
             col += dc
+            nodes.append((row, col))
             if not is_valid_square(row, col):
                 return False
-        if has_duplicate_edges(((row, col)) + capture):
+        if has_duplicate_edges(nodes):
             return False
         return True
 
