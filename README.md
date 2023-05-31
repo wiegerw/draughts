@@ -1,5 +1,7 @@
 # draughts
-The draughts library is a C++ library for draughts. It contains python bindings for Scan 3.1.
+The draughts library is a C++ library for international draughts. It contains Python bindings for the strong draughts program Scan 3.1.
+
+This library is used in master thesis projects aimed at the application of AlphaZero like techniques to draughts.
 
 ## Requirements
 A C++17 compiler.
@@ -10,11 +12,8 @@ The following build systems are supported
 
 ### Python bindings
 Draughts comes with python bindings. For this the package pybind11 is needed, see 
-https://github.com/pybind/pybind11. Note that on Ubuntu the installation of
-the `pybind11-dev` package may fail, so instead a manual installation may be needed.
-See also https://github.com/pybind/pybind11/issues/2748.
+https://github.com/pybind/pybind11.
 
 On Windows a recent compiler is needed (e.g. Visual Studio 2019). 
-Then `python setup.py install --user` should do the job.
 
-On Linux the python bindings can be installed using `pip3 install .`
+The python bindings can for example be installed using the command `pip3 install . --user`
