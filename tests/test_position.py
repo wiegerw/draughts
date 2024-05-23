@@ -327,7 +327,7 @@ class Test(unittest.TestCase):
         assert pos.opponent_has_no_pieces()
         # N.B. scan_search does not handle this case!
 
-    def test_play_forced_moves(self):
+    def test_play_forced_moves1(self):
         text1 = '''
            x   .   .   .   .
          .   .   .   .   .
@@ -352,6 +352,36 @@ class Test(unittest.TestCase):
          .   .   .   .   o
            .   .   .   .   .
          .   .   .   .   .   B
+        '''
+        expected = parse_position(text2)
+        pos = play_forced_moves(pos1)
+        self.assertEqual(expected, pos)
+
+    def test_play_forced_moves2(self):
+        text1 = '''
+            x   x   .   .   .
+          x   .   x   .   .
+            .   .   x   x   x
+          x   x   x   o   x
+            .   .   .   o   o
+          .   x   .   o   .
+            .   .   o   .   .
+          .   o   .   o   .
+            o   .   o   .   .
+          .   o   .   .   .   B
+        '''
+        pos1 = parse_position(text1)
+        text2 = '''
+            x   x   .   .   .
+          x   .   x   .   .
+            .   .   x   .   x
+          x   x   x   .   x
+            .   .   .   o   o
+          .   x   .   .   .
+            .   .   o   x   .
+          .   o   .   o   .
+            o   .   o   .   .
+          .   o   .   .   .   W
         '''
         expected = parse_position(text2)
         pos = play_forced_moves(pos1)
