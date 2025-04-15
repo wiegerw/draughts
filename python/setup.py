@@ -7,7 +7,7 @@ from pybind11 import get_cmake_dir
 
 import sys
 
-__version__ = "0.11"
+__version__ = "0.12"
 
 # The main interface is through Pybind11Extension.
 # * You can add cxx_std=11/14/17, and then build_ext can be removed.
@@ -20,38 +20,38 @@ __version__ = "0.11"
 
 ext_modules = [
     Pybind11Extension("draughts1",
-        ["src/bb_base.cpp",
-         "src/bb_comp.cpp",
-         "src/bb_index.cpp",
-         "src/bit.cpp",
-         "src/book.cpp",
-         "src/common.cpp",
-         "src/dxp.cpp",
-         "src/eval.cpp",
-         "src/fen.cpp",
-         "src/game.cpp",
-         "src/gen.cpp",
-         "src/hash.cpp",
-         "src/hub.cpp",
-         "src/libmy.cpp",
-         "src/list.cpp",
-         "src/move.cpp",
-         "src/pos.cpp",
-         "src/score.cpp",
-         "src/search.cpp",
-         "src/socket.cpp",
-         "src/sort.cpp",
-         "src/terminal.cpp",        
-         "src/thread.cpp",
-         "src/tt.cpp",
-         "src/util.cpp",
-         "src/var.cpp",
-         "tools/python-bindings.cpp"
+        ["../src/bb_base.cpp",
+         "../src/bb_comp.cpp",
+         "../src/bb_index.cpp",
+         "../src/bit.cpp",
+         "../src/book.cpp",
+         "../src/common.cpp",
+         "../src/dxp.cpp",
+         "../src/eval.cpp",
+         "../src/fen.cpp",
+         "../src/game.cpp",
+         "../src/gen.cpp",
+         "../src/hash.cpp",
+         "../src/hub.cpp",
+         "../src/libmy.cpp",
+         "../src/list.cpp",
+         "../src/move.cpp",
+         "../src/pos.cpp",
+         "../src/score.cpp",
+         "../src/search.cpp",
+         "../src/socket.cpp",
+         "../src/sort.cpp",
+         "../src/terminal.cpp",        
+         "../src/thread.cpp",
+         "../src/tt.cpp",
+         "../src/util.cpp",
+         "../src/var.cpp",
+         "../tools/python-bindings.cpp"
          ],
         define_macros = [('VERSION_INFO', __version__)],
         extra_compile_args=['-std=c++17'] if not sys.platform.startswith("win") else [],
-        extra_link_args = ['ws2_32.lib', 'wldap32.lib', 'crypt32.lib'] if sys.platform.startswith("win") else ['-ltbb'],
-        include_dirs=['include'],
+        extra_link_args = ['ws2_32.lib', 'wldap32.lib', 'crypt32.lib'] if sys.platform.startswith("win") else [],
+        include_dirs=['../include'],
     ),
 ]
 
@@ -63,9 +63,6 @@ setup(
     description="Draughts library (includes Scan 3.1)",
     long_description="",
     ext_modules=ext_modules,
-    # extras_require={"test": "pytest"},
-    # Currently, build_ext only provides an optional "highest supported C++
-    # level" feature, but in the future it may provide more features.
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
 )
