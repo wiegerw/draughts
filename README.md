@@ -16,4 +16,9 @@ https://github.com/pybind/pybind11.
 
 On Windows a recent compiler is needed (e.g. Visual Studio 2019). 
 
-The python bindings can for example be installed using the command `pip3 install . --user`
+The python bindings can for example be installed using the commands
+
+```
+cd python
+pip3 install .
+```
