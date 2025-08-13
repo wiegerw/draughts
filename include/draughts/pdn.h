@@ -8,14 +8,13 @@
 #ifndef DRAUGHTS_PDN_H
 #define DRAUGHTS_PDN_H
 
+#include <fstream>
+#include <regex>
+#include <string>
+#include <vector>
 #include "draughts/scan.h"
 #include "scan/move.hpp"
 #include "scan/pos.hpp"
-#include <fstream>
-#include <regex>
-#include <set>
-#include <string>
-#include <vector>
 
 namespace draughts {
 
@@ -419,12 +418,14 @@ std::vector<Move> parse_pdn_moves(const std::string& text)
   return parser.parse_pdn_moves(text);
 }
 
+inline
 pdn_game parse_pdn_game(const std::string& text)
 {
   pdn_parser parser;
   return parser.parse_pdn_game(text);
 }
 
+inline
 std::vector<pdn_game> parse_pdn_file(const std::string& filename)
 {
   pdn_parser parser;
